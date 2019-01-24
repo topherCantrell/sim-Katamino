@@ -12,7 +12,7 @@ ABBEEFHHHHKK
 BBEEEFFIIIII
 ```
 
-# Smal Slam
+# Small Slam
 ```
 A: AHG E B F L D
 ```
