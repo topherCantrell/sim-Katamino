@@ -90,6 +90,8 @@ def place_piece(board, x_start, y_start, piece, rotation):
 def solve(board, pieces, index):
     """recursive solve"""
     for rot in range(8):
+        if index == 0:
+            print('.', end='', flush=True)
         for y in range(len(board)):
             for x in range(len(board[0])):
                 tb = copy.deepcopy(board)
@@ -99,22 +101,27 @@ def solve(board, pieces, index):
                     print_board(tb)
                     return True
                 sol = solve(tb, pieces, index + 1)
-                if sol:
-                    return True
+                # if sol:
+                #    return True
     return False
 
 
-def main2():
-    for rot in range(8):
-        board = new_board(20, 20)
-        place_piece(board, 10, 10, PIECES[1], rot)
-        print_board(board)
+SMALL_SLAM_3 = [
+    'AHGEBFLD',
+    'DECAFHGB',
+    'ALEHDCFK',
+    'HECDLKBG',
+    'ADLFCGHB',
+    'ECKHGDAB',
+    'ALEFHBDK'
+]
 
 
 def main():
     """main"""
     
-    pieces = make_sequence('AHGEBFL')        
+    # pieces = make_sequence('AHGEBFL')
+    pieces = make_sequence('AHGEB')   
     board = new_board(len(pieces))
     solve(board, pieces, 0)
 
