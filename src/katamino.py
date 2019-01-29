@@ -119,19 +119,13 @@ def solve(board, pieces, index, out):
 
 SMALL_SLAM_3 = [
     'AHGEBFLD',
-    'DEC',
-    'ALEH',
+    'DECAFHGB',
+    'ALEHDCFK',
+    'HECDLKBG',
+    'ADLFCGHB',
+    'ECKHGDAB',
+    'ALEFHBDK'
 ]
-
-# SMALL_SLAM_3 = [
-#    'AHGEBFLD',
-#    'DECAFHGB',
-#    'ALEHDCFK',
-#    'HECDLKBG',
-#    'ADLFCGHB',
-#    'ECKHGDAB',
-#    'ALEFHBDK'
-# ]
 
 
 def main():
