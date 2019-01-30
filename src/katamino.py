@@ -7,6 +7,45 @@ import datetime
 import pieces
 
 
+def _rec_blanks(blanks, cur_set, current):
+    test_cell = (current[0] + 1, current[1])
+    if test_cell in blanks:
+        cur_set.append(test_cell)
+        del blanks[blanks.index(test_cell)]
+        _rec_blanks(blanks, cur_set, test_cell)
+    test_cell = (current[0] - 1, current[1])
+    if test_cell in blanks:
+        cur_set.append(test_cell)
+        del blanks[blanks.index(test_cell)]
+        _rec_blanks(blanks, cur_set, test_cell)
+    test_cell = (current[0], current[1] + 1)
+    if test_cell in blanks:
+        cur_set.append(test_cell)
+        del blanks[blanks.index(test_cell)]
+        _rec_blanks(blanks, cur_set, test_cell)
+    test_cell = (current[0], current[1] - 1)
+    if test_cell in blanks:
+        cur_set.append(test_cell)
+        del blanks[blanks.index(test_cell)]
+        _rec_blanks(blanks, cur_set, test_cell)
+
+
+def ok_blanks(board):
+    blanks = []
+    for y in range(len(board)):
+        for x in range(len(board[0])):
+            if board[y][x] == '.':
+                blanks.append((x, y))
+    while blanks:
+        cur_set = [blanks[0]]
+        del blanks[0]
+        _rec_blanks(blanks, cur_set, cur_set[0])
+        if len(cur_set) < 5:
+            return False
+
+    return True
+
+
 def new_board(width, height=5):
     """Make a new (empty) board"""
     board = []
@@ -51,7 +90,8 @@ def solve(board, pieces, index, out):
                     write_board(board, out)
                     out.flush()
                 else:
-                    solve(board, pieces, index + 1, out)
+                    if ok_blanks(board):
+                        solve(board, pieces, index + 1, out)
                 piece.remove(board, x, y, rot)
 
 
