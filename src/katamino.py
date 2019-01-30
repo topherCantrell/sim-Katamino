@@ -35,6 +35,18 @@ def get_piece_by_name(name):
             return piece
     return None
 
+def is_iso(board,x,y):
+    if board[y][x]!='.':
+        return False
+    if y>0 and board[y-1][x]=='.':
+        return False
+    if x>0 and board[y][x-1]=='.':
+        return False
+    if y<len(board)-1 and board[y+1][x]=='.':
+        return False
+    if x<len(board[0])-1 and board[y][x+1]=='.':
+        return False
+    return True
 
 def new_board(width, height=5):
     """Make a new (empty) board"""
@@ -107,6 +119,16 @@ def solve(board, pieces, index, out):
                 tb = copy.deepcopy(board)
                 if not place_piece(tb, x, y, pieces[index], rot):
                     continue
+                has_iso = False
+                for yy in range(len(board)):
+                    for xx in range(len(board[0])):
+                        if is_iso(board,xx,yy):
+                            has_iso = True
+                            break
+                    if has_iso:
+                        break
+                if has_iso:
+                    continue                        
                 if index == (len(pieces) - 1):
                     write_board(tb, out)
                     out.flush()
@@ -128,7 +150,7 @@ SMALL_SLAM_3 = [
 ]
 
 
-def main():
+def main2():
     """main"""
     
     with open('results.txt', 'w') as out:
@@ -154,6 +176,13 @@ def main():
                 print((after - now).seconds)        
                 pos += 1        
             
+
+def draw_piece(piece,x,y):
+    color = piece['color'].split(' ')
+    print('<rect x="{x}" y="{y}" width="20" height="20" style="fill:rgb({aa},{bb},{cc}"/>'.format(x=x,y=y,aa=color[0],bb=color[1],cc=color[2]))    
+
+def main():
+    draw_piece(PIECES[0],10,100)
 
 if __name__ == '__main__':
     main()
