@@ -4,49 +4,8 @@ Katamino Simulator
 
 import copy
 import datetime
+import pieces
 
-PIECES = [
-    {'name':'A', 'pattern':'UUUR', 'color':'248 115 50'},
-    {'name':'B', 'pattern':'RURU', 'color':'112 90 69'},
-    {'name':'C', 'pattern':'URRD', 'color':'223 207 59'},
-    {'name':'D', 'pattern':'RRDR', 'color':'61 35 112'},
-    {'name':'E', 'pattern':'RRUL', 'color':'218 108 52'},
-    {'name':'F', 'pattern':'LUUL', 'color':'31 183 223'},
-    {'name':'G', 'pattern':'RRlDD', 'color':'32 148 52'},
-    {'name':'H', 'pattern':'RUdRR', 'color':'121 68 50'},
-    {'name':'I', 'pattern':'RRRR', 'color':'82 125 175'},
-    {'name':'J', 'pattern':'DDuLrR', 'color':'244 70 39'},
-    {'name':'K', 'pattern':'LULrU', 'color':'11 115 104'},
-    {'name':'L', 'pattern':'RRDD', 'color':'19 148 191'},
-]
-
-
-def make_sequence(seq):
-    ret = []
-    for piece in seq:
-        ret.append(get_piece_by_name(piece))
-    return ret
-
-
-def get_piece_by_name(name):
-    """Find the given piece"""
-    for piece in PIECES:
-        if piece['name'] == name:
-            return piece
-    return None
-
-def is_iso(board,x,y):
-    if board[y][x]!='.':
-        return False
-    if y>0 and board[y-1][x]=='.':
-        return False
-    if x>0 and board[y][x-1]=='.':
-        return False
-    if y<len(board)-1 and board[y+1][x]=='.':
-        return False
-    if x<len(board[0])-1 and board[y][x+1]=='.':
-        return False
-    return True
 
 def new_board(width, height=5):
     """Make a new (empty) board"""
@@ -77,38 +36,6 @@ def print_board(board):
     print()
 
 
-ROTS = [
-    {'U':[0, -1], 'R':[1, 0], 'D':[ 0, 1], 'L':[-1, 0], },
-    {'U':[1, 0], 'R':[0, 1], 'D':[-1, 0], 'L':[ 0, -1], },
-    {'U':[0, 1], 'R':[-1, 0], 'D':[ 0, -1], 'L':[1, 0], },
-    {'U':[-1, 0], 'R':[0, -1], 'D':[1, 0], 'L':[ 0, 1], },
-    {'U':[0, 1], 'R':[1, 0], 'D':[ 0, -1], 'L':[-1, 0], },
-    {'U':[1, 0], 'R':[0, -1], 'D':[-1, 0], 'L':[ 0, 1], },
-    {'U':[0, -1], 'R':[-1, 0], 'D':[ 0, 1], 'L':[1, 0], },
-    {'U':[-1, 0], 'R':[0, 1], 'D':[1, 0], 'L':[ 0, -1], },
-]
-
-
-def place_piece(board, x_start, y_start, piece, rotation):
-    """Attempt to place a piece on the board"""
-    if board[y_start][x_start] != '.':
-        return False
-    board[y_start][x_start] = piece['name']
-    rot = ROTS[rotation]
-    for direction in piece['pattern']:
-        dir_no_case = direction.upper()
-        ofs = rot[dir_no_case]
-        y_start += ofs[1]
-        x_start += ofs[0]
-        if x_start < 0 or x_start >= len(board[0]) or y_start < 0 or y_start >= len(board):
-            return False
-        if dir_no_case == direction:
-            if board[y_start][x_start] != '.':
-                return False
-            board[y_start][x_start] = piece['name']
-    return True
-
-
 def solve(board, pieces, index, out):
     """recursive solve"""
     for rot in range(8):
@@ -116,24 +43,16 @@ def solve(board, pieces, index, out):
             print('.', end='', flush=True)
         for y in range(len(board)):
             for x in range(len(board[0])):
-                tb = copy.deepcopy(board)
-                if not place_piece(tb, x, y, pieces[index], rot):
+                piece = pieces[index]
+                if not piece.can_place(board, x, y, rot):
                     continue
-                has_iso = False
-                for yy in range(len(board)):
-                    for xx in range(len(board[0])):
-                        if is_iso(board,xx,yy):
-                            has_iso = True
-                            break
-                    if has_iso:
-                        break
-                if has_iso:
-                    continue                        
+                next_board = copy.deepcopy(board)
+                piece.place(next_board, x, y, rot)
                 if index == (len(pieces) - 1):
-                    write_board(tb, out)
+                    write_board(next_board, out)
                     out.flush()
                     return True
-                sol = solve(tb, pieces, index + 1, out)
+                solve(next_board, pieces, index + 1, out)
                 # if sol:
                 #    return True
     return False
@@ -150,39 +69,32 @@ SMALL_SLAM_3 = [
 ]
 
 
-def main2():
+def main():
     """main"""
-    
+
     with open('results.txt', 'w') as out:
         num = 0
         for sequence in SMALL_SLAM_3:
             num = num + 1
-            pieces = []
+            pcs = []
             for pos in range(2):
-                pieces.append(get_piece_by_name(sequence[pos]))  
-            pos += 1          
-            while pos < len(sequence):                
-                pieces.append(get_piece_by_name(sequence[pos]))
-                board = new_board(len(pieces))
+                pcs.append(pieces.get_piece_by_name(sequence[pos]))
+            pos += 1
+            while pos < len(sequence):
+                pcs.append(pieces.get_piece_by_name(sequence[pos]))
+                board = new_board(len(pcs))
                 s = str(num) + ': '
-                for p in pieces:
-                    s = s + p['name']
+                for p in pcs:
+                    s = s + p.name
                 print(s, end='')
                 out.write(s + '\n')
                 now = datetime.datetime.now()
-                solve(board, pieces, 0, out)
+                solve(board, pcs, 0, out)
                 after = datetime.datetime.now()
-                
-                print((after - now).seconds)        
-                pos += 1        
-            
 
-def draw_piece(piece,x,y):
-    color = piece['color'].split(' ')
-    print('<rect x="{x}" y="{y}" width="20" height="20" style="fill:rgb({aa},{bb},{cc}"/>'.format(x=x,y=y,aa=color[0],bb=color[1],cc=color[2]))    
+                print((after - now).seconds)
+                pos += 1
 
-def main():
-    draw_piece(PIECES[0],10,100)
 
 if __name__ == '__main__':
     main()
