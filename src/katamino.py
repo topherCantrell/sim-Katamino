@@ -46,16 +46,13 @@ def solve(board, pieces, index, out):
                 piece = pieces[index]
                 if not piece.can_place(board, x, y, rot):
                     continue
-                next_board = copy.deepcopy(board)
-                piece.place(next_board, x, y, rot)
+                piece.place(board, x, y, rot)
                 if index == (len(pieces) - 1):
-                    write_board(next_board, out)
+                    write_board(board, out)
                     out.flush()
-                    return True
-                solve(next_board, pieces, index + 1, out)
-                # if sol:
-                #    return True
-    return False
+                else:
+                    solve(board, pieces, index + 1, out)
+                piece.remove(board, x, y, rot)
 
 
 SMALL_SLAM_3 = [

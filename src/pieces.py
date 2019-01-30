@@ -35,6 +35,13 @@ class Piece:
                 raise Exception('Did you check first?')
             board[y_start][x_start] = self.name
 
+    def remove(self, board, x_start, y_start, rotation):
+        board[y_start][x_start] = '.'
+        for ofs in self.draws[rotation]:
+            x_start += ofs[0]
+            y_start += ofs[1]
+            board[y_start][x_start] = '.'
+
 
 _ROTS = [
     {'U': [0, -1], 'R':[1, 0], 'D':[0, 1], 'L':[-1, 0], },
