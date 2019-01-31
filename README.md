@@ -23,10 +23,4 @@ BBEEEFFIIIII
 7: ALE F H B D K
 ```
 
-![](art/small1.jpg)<br>
-![](art/small2.jpg)<br>
-![](art/small3.jpg)<br>
-![](art/small4.jpg)<br>
-![](art/small5.jpg)<br>
-![](art/small6.jpg)<br>
-![](art/small7.jpg)<br>
+![](katamino.svg)
