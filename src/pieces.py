@@ -59,7 +59,7 @@ PIECES = [
     Piece('B', 'RURU', [112, 90, 69]),
     Piece('C', 'URRD', [223, 207, 59]),
     Piece('D', 'RRDR', [61, 35, 112]),
-    Piece('E', 'RRUL', [218, 108, 52]),
+    Piece('E', 'RRUL', [255, 192, 203]),
     Piece('F', 'LUUL', [31, 183, 223]),
     Piece('G', 'RRlDD', [32, 148, 52]),
     Piece('H', 'RUdRR', [121, 68, 50]),

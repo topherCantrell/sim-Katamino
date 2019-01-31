@@ -22,3 +22,11 @@ BBEEEFFIIIII
 6: ECK H G D A B
 7: ALE F H B D K
 ```
+
+![](art/small1.jpg)
+![](art/small2.jpg)
+![](art/small3.jpg)
+![](art/small4.jpg)
+![](art/small5.jpg)
+![](art/small6.jpg)
+![](art/small7.jpg)
