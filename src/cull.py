@@ -11,7 +11,7 @@ def flip_left_right(board):
         ret.append(''.join(reversed(b)))
     return ret
 
-with open('resultsSmallSlam.txt') as f:
+with open('../smallSlamRAW.txt') as f:
     lines = f.readlines()
     
 times = {}
@@ -29,7 +29,7 @@ while not lines[pos].startswith('----'):
             ti = '<1'
         times[n] = ti
     
-solutions = {}
+solutions = []
 pos += 1
 
 current = None
@@ -41,9 +41,9 @@ while pos<len(lines):
     if not g:
         continue
     if ':' in g:
-        print(g + ' ' +times[g])
+        #print(g + ' ' +times[g])
         current = []
-        solutions[g] = current
+        solutions.append([g,current])
     else:        
         board = []
         board.append(g)
@@ -59,6 +59,6 @@ while pos<len(lines):
         if flip_top_bottom(flip_left_right(board)) in current:
             continue
         current.append(board)
-        print(board)
+        #print(board)
         
-        
+print(solutions)        
