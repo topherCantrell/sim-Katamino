@@ -5,6 +5,7 @@ Katamino Simulator
 import copy
 import datetime
 import pieces
+import board
 
 
 def _rec_blanks(blanks, cur_set, current):
@@ -46,53 +47,24 @@ def ok_blanks(board):
     return True
 
 
-def new_board(width, height=5):
-    """Make a new (empty) board"""
-    board = []
-    for _ in range(0, height):
-        row = []
-        for _ in range(0, width):
-            row.append('.')
-        board.append(row)
-    return board
-
-
-def write_board(board, out):
-    """Friendly-print the board"""
-    for row in board:
-        for col in row:
-            out.write(col)
-        out.write('\n')
-    out.write('\n')
-
-
-def print_board(board):
-    """Friendly-print the board"""
-    for row in board:
-        for col in row:
-            print(col, end='')
-        print()
-    print()
-
-
-def solve(board, pieces, index, out):
+def solve(brd, pieces, index, out):
     """recursive solve"""
     for rot in range(8):
         if index == 0:
             print('.', end='', flush=True)
-        for y in range(len(board)):
-            for x in range(len(board[0])):
+        for y in range(len(brd)):
+            for x in range(len(brd[0])):
                 piece = pieces[index]
-                if not piece.can_place(board, x, y, rot):
+                if not piece.can_place(brd, x, y, rot):
                     continue
-                piece.place(board, x, y, rot)
+                piece.place(brd, x, y, rot)
                 if index == (len(pieces) - 1):
-                    write_board(board, out)
+                    board.write_board(brd, out)
                     out.flush()
                 else:
-                    if ok_blanks(board):
-                        solve(board, pieces, index + 1, out)
-                piece.remove(board, x, y, rot)
+                    if ok_blanks(brd):
+                        solve(brd, pieces, index + 1, out)
+                piece.remove(brd, x, y, rot)
 
 
 SMALL_SLAM_3 = [
@@ -119,14 +91,14 @@ def main():
             pos += 1
             while pos < len(sequence):
                 pcs.append(pieces.get_piece_by_name(sequence[pos]))
-                board = new_board(len(pcs))
+                brd = board.new_board(len(pcs))
                 s = str(num) + ': '
                 for p in pcs:
                     s = s + p.name
                 print(s, end='')
                 out.write(s + '\n')
                 now = datetime.datetime.now()
-                solve(board, pcs, 0, out)
+                solve(brd, pcs, 0, out)
                 after = datetime.datetime.now()
 
                 print((after - now).seconds)

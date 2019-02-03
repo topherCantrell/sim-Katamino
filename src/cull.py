@@ -1,15 +1,5 @@
 
-def flip_top_bottom(board):
-    ret = []
-    for b in board:
-        ret.insert(0,b)
-    return ret
-
-def flip_left_right(board):
-    ret = []
-    for b in board:
-        ret.append(''.join(reversed(b)))
-    return ret
+import board
     
 def get_unique_solutions(fname):
     
@@ -54,11 +44,11 @@ def get_unique_solutions(fname):
                 pos += 1
             if board in current:
                 continue
-            if flip_left_right(board) in current:
+            if board.flip_left_right(board) in current:
                 continue
-            if flip_top_bottom(board) in current:
+            if board.flip_top_bottom(board) in current:
                 continue
-            if flip_top_bottom(flip_left_right(board)) in current:
+            if board.flip_top_bottom(board.flip_left_right(board)) in current:
                 continue
             current.append(board)
             #print(board)
