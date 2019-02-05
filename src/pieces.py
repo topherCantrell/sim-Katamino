@@ -55,18 +55,18 @@ _ROTS = [
 ]
 
 PIECES = [
-    Piece('A', 'UUUR', [248, 115, 50]),
-    Piece('B', 'RURU', [112, 90, 69]),
-    Piece('C', 'URRD', [223, 207, 59]),
-    Piece('D', 'RRDR', [61, 35, 112]),
-    Piece('E', 'RRUL', [255, 192, 203]),
-    Piece('F', 'LUUL', [31, 183, 223]),
-    Piece('G', 'RRlDD', [32, 148, 52]),
-    Piece('H', 'RUdRR', [121, 68, 50]),
-    Piece('I', 'RRRR', [82, 125, 175]),
-    Piece('J', 'DDuLrR', [244, 70, 39]),
-    Piece('K', 'LULrU', [11, 115, 104]),
-    Piece('L', 'RRDD', [19, 148, 191]),
+    Piece('A', 'UUUR',     [244, 117, 33]),
+    Piece('B', 'RURU',     [119, 192, 66]),
+    Piece('C', 'URRD',     [255, 234, 1]),
+    Piece('D', 'RRDR',     [56, 46, 141]),
+    Piece('E', 'RRUL',     [208, 108, 170]),
+    Piece('F', 'LUUL',     [0, 176, 211]),
+    Piece('G', 'RRlDD',    [0, 167, 78]),
+    Piece('H', 'RUdRR',    [113, 55, 31]),
+    Piece('I', 'RRRR',     [60, 123, 191]),
+    Piece('J', 'DDuLrR',   [237, 26, 56]),
+    Piece('K', 'LULrU',    [120, 133, 140]),
+    Piece('L', 'RRDD',     [15, 160, 219]),
 ]
 
 
