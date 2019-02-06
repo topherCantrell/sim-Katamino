@@ -13,10 +13,11 @@ pixels.append(row)
 row_num = 0
 
 
-WIDTH = 10
-HEIGHT = 10
-OFS = 8
-fname = 'man11d_10x10_7.TXT'
+WIDTH = 11
+HEIGHT = 12
+XOFS = 8
+YOFS = 9
+fname = 'man9_11x12_4.TXT'
 
 with open('../art/manual/' + fname) as f:
     for g in f:
@@ -46,7 +47,7 @@ with open('../art/manual/' + fname) as f:
             g = 255
             b = 255
 
-        row.append([x, y, r, g, b]) 
+        row.append([x, y, r, g, b])
 
 
 cell_width = int(len(pixels[0]) / WIDTH)
@@ -54,25 +55,29 @@ ofs_width = int(cell_width / 2)
 cell_height = int(len(pixels) / HEIGHT)
 ofs_height = int(cell_height / 2)
 
+
 def get_piece_by_color(color):
     for piece in pieces.PIECES:
         if piece.color == color:
             return piece
     return None
 
+
 for y in range(HEIGHT):
     for x in range(WIDTH):
         colors = []
         xo = ofs_width + x * cell_width
         yo = ofs_height + y * cell_height
-        for i in range(xo - OFS, xo + OFS):
-            for j in range(yo - OFS, yo + OFS):
+        for i in range(xo - XOFS, xo + XOFS):
+            for j in range(yo - YOFS, yo + YOFS):
                 pix = pixels[j][i]
                 col = pix[2:]
                 if not col in colors and col != [255, 255, 255]:
                     colors.append(col)
-        #print(colors)
-        if len(colors)!=1:
-            raise Exception('Need exactly 1')
-        print(get_piece_by_color(colors[0]).name,end='')
+        # print(colors)
+        if len(colors) != 1:
+            #raise Exception('Need exactly 1')
+            print('?', end='')
+        else:
+            print(get_piece_by_color(colors[0]).name, end='')
     print()
