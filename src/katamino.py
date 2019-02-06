@@ -2,6 +2,13 @@
 Katamino Simulator
 """
 
+import copy
+import datetime
+
+import board
+import pieces
+
+# These are the challenges as listed in the manual
 CHALLENGES = [
     {'title': 'Small Slam', 'page': '6', 'lines': [
         'A3:AHGEBFLD', 'B3:DECAFHGB', 'C3:ALEHDCFK', 'D3:HECDLKBG', 'E3:ADLFCGHB', 'F3:ECKHGDAB', 'G3:ALEFHBDK']
@@ -9,8 +16,8 @@ CHALLENGES = [
     {'title': 'Slam 1', 'page': '7,8', 'lines': [
         'A5:AECKBHFDL', 'B5:HDECFLGAK', 'C5:AHLGBFKCE', 'D5:DLECKBAFG', 'E5:AHDEBGLKC', 'F5:AECFGKDBH', 'G5:ALECBDHGF',
         'H5:ADEGBFHKL', 'I5:AHLCFKBDG', 'J5:ALEKBHCGD', 'K5:AHDCBKELF', 'L5:HLEFBDKGC', 'M5:AHLEKCGFB', 'N5:AHEFBDCLG',
-        'O6:AHDCKGFE', 'P6:ADLEFKGH', 'Q6:AHEFKBLC', 'R6:ADLECGBK', 'S6:HLECGBAF', 'T6:AHLFKGEB', 'U6:ADLECKFG',
-        'V6:DLECFGKH', 'W6:DLECFKHB', 'X6:HDLEGBFC', 'Y6:ADCFKGLH', 'Z6:AHEKGBCF',
+        'O6:AHDCKGFE',  'P6:ADLEFKGH',  'Q6:AHEFKBLC',  'R6:ADLECGBK',  'S6:HLECGBAF',  'T6:AHLFKGEB',  'U6:ADLECKFG',
+        'V6:DLECFGKH',  'W6:DLECFKHB',  'X6:HDLEGBFC',  'Y6:ADCFKGLH',  'Z6:AHEKGBCF',
         'Spades6:HDECFGKB', 'Hearts6:ADLCKBHG', 'Diamonds6:ADLEKGBF', 'Clubs6:ALECKGDH']
      },
     {'title': 'Ultimate Challenges 1', 'page': '9', 'lines': [
@@ -26,8 +33,8 @@ CHALLENGES = [
         'G9:IHDECFKGJ', 'H9:IAHDLKGBJ', 'I9:AHDLCFKGJ', 'J9:IAHDLEFGB', 'K9:IALECFGBJ', 'L9:IAHDCFKBJ'
     ]},
     {'title': 'Ultimate Challenges 4', 'page': '11', 'lines': [
-        'No1_7:IAHECBJGLK', 'No2_7:AHEFKGBJDC', 'No3_7:IADLCFGHKE', 'No4_7:AHEKGBJIFL', 'No5_7:IHDLCKBAEJ',
-        'No6_7:ALEKGBJFCD', 'No7_7:HDECFKGLJI', 'No8_7:IADECGJBFH', 'No9_7:ILECFKBDHA', 'No10_7:IHDLCGJKBF',
+        'No1_7:IAHECBJGLK',  'No2_7:AHEFKGBJDC',  'No3_7:IADLCFGHKE',  'No4_7:AHEKGBJIFL',  'No5_7:IHDLCKBAEJ',
+        'No6_7:ALEKGBJFCD',  'No7_7:HDECFKGLJI',  'No8_7:IADECGJBFH',  'No9_7:ILECFKBDHA',  'No10_7:IHDLCGJKBF',
         'No11_7:IADEFGBKJC', 'No12_7:IHDLCFKGBA', 'No13_7:AHLCFKBJID', 'No14_7:DLECKGJHAB', 'No15_7:IAHLCKBEFJ',
         'No16_7:AHLEFBJGCI', 'No17_7:IHECFGBDLK', 'No18_7:IDLECKJBGF', 'No19_7:ADEFKGBLJH', 'No20_7:IADEFKGJHL',
         'No21_7:IDLECFGJAB', 'No22_7:IAHCKGBFDJ', 'No23_7:HDLEFKGBJC', 'No24_7:IAHDCGJLFE', 'No25_7:IHDLEKBJGF',
@@ -36,82 +43,6 @@ CHALLENGES = [
         'No36_7:ADLCGBJIKE', 'No37_7:IAECKGBFLH', 'No38_7:IADCFKGLJB', 'No39_7:AHDLCKJBFG', 'No40_7:IALEFGBJHD',
     ]},
 
-]
-
-import copy
-import datetime
-
-import board
-import pieces
-
-
-def _rec_blanks(blanks, cur_set, current):
-    test_cell = (current[0] + 1, current[1])
-    if test_cell in blanks:
-        cur_set.append(test_cell)
-        del blanks[blanks.index(test_cell)]
-        _rec_blanks(blanks, cur_set, test_cell)
-    test_cell = (current[0] - 1, current[1])
-    if test_cell in blanks:
-        cur_set.append(test_cell)
-        del blanks[blanks.index(test_cell)]
-        _rec_blanks(blanks, cur_set, test_cell)
-    test_cell = (current[0], current[1] + 1)
-    if test_cell in blanks:
-        cur_set.append(test_cell)
-        del blanks[blanks.index(test_cell)]
-        _rec_blanks(blanks, cur_set, test_cell)
-    test_cell = (current[0], current[1] - 1)
-    if test_cell in blanks:
-        cur_set.append(test_cell)
-        del blanks[blanks.index(test_cell)]
-        _rec_blanks(blanks, cur_set, test_cell)
-
-
-def ok_blanks(board):
-    blanks = []
-    for y in range(len(board)):
-        for x in range(len(board[0])):
-            if board[y][x] == '.':
-                blanks.append((x, y))
-    while blanks:
-        cur_set = [blanks[0]]
-        del blanks[0]
-        _rec_blanks(blanks, cur_set, cur_set[0])
-        if len(cur_set) < 5:
-            return False
-
-    return True
-
-
-def solve(brd, pieces, index, out):
-    """recursive solver"""
-    for rot in range(8):
-        if index == 0:
-            print('.', end='', flush=True)
-        for y in range(len(brd)):
-            for x in range(len(brd[0])):
-                piece = pieces[index]
-                if not piece.can_place(brd, x, y, rot):
-                    continue
-                piece.place(brd, x, y, rot)
-                if index == (len(pieces) - 1):
-                    board.write_board(brd, out)
-                    out.flush()
-                else:
-                    if ok_blanks(brd):
-                        solve(brd, pieces, index + 1, out)
-                piece.remove(brd, x, y, rot)
-
-
-SMALL_SLAM_3 = [
-    '',
-    '',
-    '',
-    '',
-    '',
-    '',
-    ''
 ]
 
 
@@ -142,7 +73,7 @@ def main():
                 pos += 1
 
 
-chal = CHALLENGES[3]
+chal = CHALLENGES[5]
 line = chal['lines'][0]
 line = line[line.index(':') + 1:]
 brd = board.new_board(len(line) * 6, len(chal['lines']) * 6)
