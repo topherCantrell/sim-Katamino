@@ -54,10 +54,9 @@ def add_solution(comb, board, solver_version, solve_time):
         {'solver_version': solver_version, 'solve_time': solve_time, 'board': board})
 
 
-def set_challenges(comb, chals):
+def add_challenge(comb, chal):
     """Set the challenges for the given piece combination"""
     if comb not in SOLUTION_DB:
-        SOLUTION_DB[comb] = {'challenges': chals}
-    else:
-        SOLUTION_DB[comb]['challenges'] = chals
+        SOLUTION_DB[comb] = {'challenges': []}
+    SOLUTION_DB[comb]['challenges'].append(chal)
     _write_db()
