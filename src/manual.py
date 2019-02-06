@@ -46,7 +46,7 @@ with open('../art/manual/' + fname) as f:
             g = 255
             b = 255
 
-        row.append((x, y, r, g, b))
+        row.append([x, y, r, g, b]) 
 
 
 cell_width = int(len(pixels[0]) / WIDTH)
@@ -54,6 +54,11 @@ ofs_width = int(cell_width / 2)
 cell_height = int(len(pixels) / HEIGHT)
 ofs_height = int(cell_height / 2)
 
+def get_piece_by_color(color):
+    for piece in pieces.PIECES:
+        if piece.color == color:
+            return piece
+    return None
 
 for y in range(HEIGHT):
     for x in range(WIDTH):
@@ -64,6 +69,10 @@ for y in range(HEIGHT):
             for j in range(yo - OFS, yo + OFS):
                 pix = pixels[j][i]
                 col = pix[2:]
-                if not col in colors and col != (255, 255, 255):
+                if not col in colors and col != [255, 255, 255]:
                     colors.append(col)
-        print(colors)
+        #print(colors)
+        if len(colors)!=1:
+            raise Exception('Need exactly 1')
+        print(get_piece_by_color(colors[0]).name,end='')
+    print()
