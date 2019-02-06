@@ -4,6 +4,22 @@ import board
 import pieces
 import solver
 
+# n=12 pieces
+# r=1  :  12 combinations
+# r=2  :  66
+# r=3  : 220
+# r=4  : 495
+# r=5  : 792
+# r=6  : 924
+# r=7  : 792
+# r=8  : 495
+# r=9  : 220
+# r=10 :  66
+# r=11 :  12
+# r=12 :   1
+#
+# Total of 4095 (4096 = 2^12, if you count r=0)
+
 
 def make_combos(pieces, num):
     """Make all possible combinations of N pieces."""
