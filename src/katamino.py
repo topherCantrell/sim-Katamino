@@ -32,8 +32,8 @@ CHALLENGES = [
         'No16_7:','No17_7:','No18_7:','No19_7:','No20_7:',
         'No21_7:','No22_7:','No23_7:','No24_7:','No25_7:',
         'No26_7:','No27_7:','No28_7:','No29_7:','No30_7:',
-        'No31_7:','No32_7:','No33_7:','No34_7:','No35_7:',
-        'No36_7:','No37_7:','No38_7:','No39_7:','No40_7:',
+        'No31_7:AHDEKGBJIF','No32_7:IHECFKGDBJ','No33_7:AHDLEFBJKI','No34_7:IAHCKGJFDL','No35_7:IHDLCGBEJK',
+        'No36_7:ADLCGBJIKE','No37_7:IAECKGBFLH','No38_7:IADCFKGLJB','No39_7:AHDLCKJBFG','No40_7:IALEFGBJHD',
     ]},
     
 ]
@@ -140,7 +140,7 @@ def main():
                 print((after - now).seconds)
                 pos += 1
 
-chal = CHALLENGES[0]
+chal = CHALLENGES[5]
 line = chal['lines'][0]
 line = line[line.index(':')+1:]
 brd = board.new_board(len(line)*6,len(chal['lines'])*6)
