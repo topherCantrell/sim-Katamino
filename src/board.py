@@ -1,3 +1,7 @@
+"""
+Board functions: rotating, printing, etc.
+"""
+
 def new_board(width, height=5):
     """Make a new (empty) board"""
     board = []
@@ -30,8 +34,9 @@ def print_board(board):
 def strip_board(b):
     li = len(b[0])
     lj = 0
+    blank = ['.'] * len(b[0])
     for i in range(len(b)-1,-1,-1):
-        if not b[i].replace('.',' ').strip():
+        if b[i]==blank:
             del b[i]
             continue
         g = b[i]
