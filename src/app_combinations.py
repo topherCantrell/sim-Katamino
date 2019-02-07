@@ -57,6 +57,7 @@ def all_solveable_combos(num):
 def solve_all_combos(num):
     combos = make_combos(pieces.PIECES, num)
     with_solutions = 0
+    dotcnt = 0
     print('Solving {total} combinations of {num}:'.format(
         total=len(combos), num=num), end='', flush=True)
     for com in combos:
@@ -67,6 +68,9 @@ def solve_all_combos(num):
             pies.append(pieces.get_piece_by_name(n))
         solver.solve(brd, pies, 0, sols)
         print('.', end='', flush=True)
+        dotcnt += 1
+        if dotcnt % 25 == 0:
+            print()
         if sols:
             # print(len(sols))
             sols = solver.cull(sols)
@@ -83,11 +87,11 @@ def solve_all_combos(num):
 # solve_all_combos(3)
 # solve_all_combos(4)
 # solve_all_combos(5)
+# solve_all_combos(6)
 
-solve_all_combos(6)
+solve_all_combos(7)
+solve_all_combos(8)
 
-# solve_all_combos(7)
-# solve_all_combos(8)
 # solve_all_combos(9)
 # solve_all_combos(10)
 # solve_all_combos(11)
