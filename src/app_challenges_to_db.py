@@ -1,4 +1,4 @@
-import katamino
+import challenges
 import solutions_db
 
 # Make sure all the game combinations in the challenges are marked as such
@@ -7,7 +7,7 @@ import solutions_db
 
 
 def main():
-    for challenge in katamino.CHALLENGES:
+    for challenge in challenges.CHALLENGES:
         for line in challenge['lines']:
             i = line.index('-')
             name = line[0:i]
@@ -20,3 +20,6 @@ def main():
                 #print(comb, challenge['title'] + ':' + name)
                 solutions_db.add_challenge(
                     comb, challenge['title'] + ':' + name)
+
+
+main()

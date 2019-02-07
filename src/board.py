@@ -2,6 +2,7 @@
 Board functions: rotating, printing, etc.
 """
 
+
 def new_board(width, height=5):
     """Make a new (empty) board"""
     board = []
@@ -35,43 +36,45 @@ def strip_board(b):
     li = len(b[0])
     lj = 0
     blank = ['.'] * len(b[0])
-    for i in range(len(b)-1,-1,-1):
-        if b[i]==blank:
+    for i in range(len(b) - 1, -1, -1):
+        if b[i] == blank:
             del b[i]
             continue
         g = b[i]
         ki = 0
-        while g[ki]=='.':
+        while g[ki] == '.':
             ki = ki + 1
-        kj = len(g)-1
-        while g[kj]=='.':
+        kj = len(g) - 1
+        while g[kj] == '.':
             kj = kj - 1
-        if ki<li:
+        if ki < li:
             li = ki
-        if kj>lj:
+        if kj > lj:
             lj = kj
     for i in range(len(b)):
-        g = b[i][li:lj+1]
-        b[i] = g       
+        g = b[i][li:lj + 1]
+        b[i] = g
+
 
 def rotate_cw(board):
     ret = []
     for x in range(len(board[0])):
         r = ''
-        for y in range(len(board)-1,-1,-1):
+        for y in range(len(board) - 1, -1, -1):
             r = r + board[y][x]
         ret.append(r)
-    return ret            
-              
-  
+    return ret
+
+
 def flip_top_bottom(board):
     ret = []
     for b in board:
-        ret.insert(0,b)
+        ret.insert(0, b)
     return ret
+
 
 def flip_left_right(board):
     ret = []
     for b in board:
-        ret.append(''.join(reversed(b)))
+        ret.append(b[::-1])
     return ret

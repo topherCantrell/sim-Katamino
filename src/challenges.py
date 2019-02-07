@@ -46,34 +46,9 @@ CHALLENGES = [
 ]
 
 
-def main():
-    """main"""
-
-    with open('results.txt', 'w') as out:
-        num = 0
-        for sequence in SMALL_SLAM_3:
-            num = num + 1
-            pcs = []
-            for pos in range(2):
-                pcs.append(pieces.get_piece_by_name(sequence[pos]))
-            pos += 1
-            while pos < len(sequence):
-                pcs.append(pieces.get_piece_by_name(sequence[pos]))
-                brd = board.new_board(len(pcs))
-                s = str(num) + ': '
-                for p in pcs:
-                    s = s + p.name
-                print(s, end='')
-                out.write(s + '\n')
-                now = datetime.datetime.now()
-                solve(brd, pcs, 0, out)
-                after = datetime.datetime.now()
-
-                print((after - now).seconds)
-                pos += 1
-
-
 def print_text_challenge():
+    # Print a line of challenges by showing the pieces in text. This lets you
+    # compare the output to the pictures in the manual.
     chal = CHALLENGES[5]
     line = chal['lines'][0]
     line = line[line.index(':') + 1:]

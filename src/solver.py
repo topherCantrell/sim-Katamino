@@ -1,4 +1,8 @@
 import copy
+import board
+
+VERSION = '1.0'
+
 
 def _rec_blanks(blanks, cur_set, current):
     test_cell = (current[0] + 1, current[1])
@@ -21,7 +25,8 @@ def _rec_blanks(blanks, cur_set, current):
         cur_set.append(test_cell)
         del blanks[blanks.index(test_cell)]
         _rec_blanks(blanks, cur_set, test_cell)
-        
+
+
 def ok_blanks(board):
     blanks = []
     for y in range(len(board)):
@@ -36,10 +41,26 @@ def ok_blanks(board):
             return False
 
     return True
-        
+
+
+def cull(sols):
+    ret = []
+    for s in sols:
+        if s in ret:
+            continue
+        if board.flip_left_right(s) in ret:
+            continue
+        if board.flip_top_bottom(s) in ret:
+            continue
+        if board.flip_top_bottom(board.flip_left_right(s)) in ret:
+            continue
+        ret.append(s)
+    return ret
+
+
 def solve(brd, pieces, index, sols, stop_on_first=False):
     """recursive solve"""
-    for rot in range(8):        
+    for rot in range(8):
         for y in range(len(brd)):
             for x in range(len(brd[0])):
                 piece = pieces[index]
@@ -48,7 +69,7 @@ def solve(brd, pieces, index, sols, stop_on_first=False):
                 piece.place(brd, x, y, rot)
                 if index == (len(pieces) - 1):
                     b = copy.deepcopy(brd)
-                    sols.append(b)                    
+                    sols.append(b)
                     if stop_on_first:
                         return True
                 else:
@@ -58,6 +79,3 @@ def solve(brd, pieces, index, sols, stop_on_first=False):
                             return True
                 piece.remove(brd, x, y, rot)
     return False
-
-def get_unique_solutions(sols):
-    pass

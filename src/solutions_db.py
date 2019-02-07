@@ -41,22 +41,32 @@ def _write_db():
 
 def get_solutions(comb):
     """Get the solutions/challenges for the given piece combination"""
+    comb = ''.join(sorted(comb))
     if comb not in SOLUTION_DB:
         return None
     return SOLUTION_DB[comb]
 
 
-def add_solution(comb, board, solver_version, solve_time):
-    """Set the solutions for the given piece combination"""
+def ensure_combination(comb):
+    """Make sure the combination has an entry in the DB"""
+    comb = ''.join(sorted(comb))
     if comb not in SOLUTION_DB:
-        SOLUTION_DB[comb] = {'solutions': []}
-    SOLUTION_DB[comb]['solution'].append(
-        {'solver_version': solver_version, 'solve_time': solve_time, 'board': board})
+        SOLUTION_DB[comb] = {}
+
+
+def set_solutions(comb, sols):
+    """Set the solutions for the given piece combination"""
+    comb = ''.join(sorted(comb))
+    ensure_combination(comb)
+    SOLUTION_DB[comb]['solutions'] = sols
+    _write_db()
 
 
 def add_challenge(comb, chal):
     """Set the challenges for the given piece combination"""
-    if comb not in SOLUTION_DB:
-        SOLUTION_DB[comb] = {'challenges': []}
+    comb = ''.join(sorted(comb))
+    ensure_combination(comb)
+    if 'challenges' not in SOLUTION_DB[comb]:
+        SOLUTION_DB[comb]['challenges'] = []
     SOLUTION_DB[comb]['challenges'].append(chal)
     _write_db()
