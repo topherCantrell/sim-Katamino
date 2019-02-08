@@ -1,12 +1,13 @@
 
 class Piece:
 
-    def __init__(self, name, draw_spec, color,print_ofs=[0,0]):
+    def __init__(self, name, draw_spec, color, print_ofs=[0, 0], polygon=''):
         self.name = name
         self.draw_spec = draw_spec
         self.color = color
         self.draws = []
         self.print_ofs = print_ofs
+        self.polygon = polygon
         for rot in range(8):
             draw = []
             self.draws.append(draw)
@@ -56,18 +57,20 @@ _ROTS = [
 ]
 
 PIECES = [
-    Piece('A', 'UUUR',     [244, 117, 33],  [0,3]),
-    Piece('B', 'RURU',     [119, 192, 66],  [0,2]),
-    Piece('C', 'URRD',     [255, 234, 1],   [0,1]),
-    Piece('D', 'RRDR',     [56, 46, 141],   [0,0]),
-    Piece('E', 'RRUL',     [208, 108, 170], [0,1]),
-    Piece('F', 'LUUL',     [0, 176, 211],   [2,2]),
-    Piece('G', 'RRlDD',    [0, 167, 78],    [0,0]),
-    Piece('H', 'RUdRR',    [113, 55, 31],   [0,1]),
-    Piece('I', 'RRRR',     [60, 123, 191],  [0,0]),
-    Piece('J', 'DDuLrR',   [237, 26, 56],   [1,0]),
-    Piece('K', 'LULrU',    [120, 133, 140], [2,2]),
-    Piece('L', 'RRDD',     [15, 160, 219],  [0,0]),
+    Piece('A', 'UUUR',     [244, 117, 33],  [
+          0, 3], "-.5,.5 -.5,-2.5 .5,-2.5 1.5,-2.5 1.5,-1.5 .5,-1.5 .5,.5"),
+    Piece('B', 'RURU',     [119, 192, 66],  [
+          0, 2], "-.5,-.5 .5,-.5 .5,-1.5 1.5,-1.5 1.5,-2.5 2.5,-2.5 2.5,-.5 1.5,-.5 1.5,.5 -.5,.5"),
+    Piece('C', 'URRD',     [255, 234, 1],   [0, 1]),
+    Piece('D', 'RRDR',     [56, 46, 141],   [0, 0]),
+    Piece('E', 'RRUL',     [208, 108, 170], [0, 1]),
+    Piece('F', 'LUUL',     [0, 176, 211],   [2, 2]),
+    Piece('G', 'RRlDD',    [0, 167, 78],    [0, 0]),
+    Piece('H', 'RUdRR',    [113, 55, 31],   [0, 1]),
+    Piece('I', 'RRRR',     [60, 123, 191],  [0, 0]),
+    Piece('J', 'DDuLrR',   [237, 26, 56],   [1, 0]),
+    Piece('K', 'LULrU',    [120, 133, 140], [2, 2]),
+    Piece('L', 'RRDD',     [15, 160, 219],  [0, 0]),
 ]
 
 
