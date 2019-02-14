@@ -1,4 +1,8 @@
+'''All things board'''
+
+
 def new_board(width, height=5):
+    '''Create a new board'''
     ret = []
     for _ in range(height):
         ret.append([0] * width)
@@ -6,19 +10,25 @@ def new_board(width, height=5):
 
 
 def get_string_rep(board):
+    '''Make a string representation of the board'''
     ret = ''
     for row in board:
-        for c in row:
-            if c == 0:
+        for ch_token in row:
+            if ch_token == 0:
                 ret = ret + '.'
             else:
-                ret = ret + chr(c + 64)
+                if ch_token < 0:
+                    ch_token = -ch_token
+                    ret = ret + chr(ch_token + 96)
+                else:
+                    ret = ret + chr(ch_token + 64)
         ret = ret + '\n'
     return ret.strip()
 
 
-def strip_string_rep(br):
-    b = br.split('\n')
+def strip_string_rep(brd):
+    '''Remove the space around the center of a board'''
+    b = brd.split('\n')
     li = len(b[0])
     lj = 0
     blank = '.' * len(b[0])
