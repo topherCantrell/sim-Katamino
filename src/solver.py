@@ -58,11 +58,18 @@ def cull(sols):
     return ret
 
 
+# 2/10/2019 # 9:00PM
+
+report_at = 3
+
 def solve(brd, pieces, index, sols, stop_on_first=False):
+    global report_at
     """recursive solve"""
+    if index<=report_at:
+        print(index,end='',flush=True)
     for rot in range(8):
         for y in range(len(brd)):
-            for x in range(len(brd[0])):
+            for x in range(len(brd[0])):                
                 piece = pieces[index]
                 if not piece.can_place(brd, x, y, rot):
                     continue
