@@ -1,7 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<svg width="650" height="300">
-    
-    
+<svg width="650" height="300" xmlns="http://www.w3.org/2000/svg">
    
 
     <g transform="translate(50,200)  scale(5)" style="fill:rgb(244,117,33);stroke-width:.05;stroke:#000">
@@ -63,6 +60,5 @@
         <polygon points="-5,-5 25,-5 25,25 15,25 15,5 -5,5"/>
     </g>    
     
-
 
 </svg>
