@@ -16,7 +16,6 @@ def get_svg_challenge(challenge, line_num):
         wid = wid + print_info[2] + 1
         if print_info[1] > height:
             height = print_info[1]
-    height = 5
 
     ret = ret + ('<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(
         wid * 10 + 10, height * 10 + 20))
