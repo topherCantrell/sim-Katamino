@@ -2,12 +2,6 @@
 Katamino Simulator
 """
 
-import copy
-import datetime
-
-import board
-import pieces
-
 # These are the challenges as listed in the manual
 CHALLENGES = [
     {'title': 'Small Slam', 'page': '6', 'lines': [
@@ -44,22 +38,3 @@ CHALLENGES = [
     ]},
 
 ]
-
-
-def print_text_challenge():
-    # Print a line of challenges by showing the pieces in text. This lets you
-    # compare the output to the pictures in the manual.
-    chal = CHALLENGES[5]
-    line = chal['lines'][0]
-    line = line[line.index(':') + 1:]
-    brd = board.new_board(len(line) * 6, len(chal['lines']) * 6)
-
-    for y in range(len(chal['lines'])):
-        line = chal['lines'][y]
-        line = line[line.index(':') + 1:]
-        for x in range(len(line)):
-            piece = pieces.get_piece_by_name(line[x])
-            piece.place(
-                brd, x * 6 + piece.print_ofs[0], y * 6 + piece.print_ofs[1], 0)
-
-    board.print_board(brd)
