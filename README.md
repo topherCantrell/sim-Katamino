@@ -49,10 +49,10 @@ W: ![](art/Slam_1_W_6.svg)</br>
 X: ![](art/Slam_1_X_6.svg)</br>
 Y: ![](art/Slam_1_Y_6.svg)</br>
 Z: ![](art/Slam_1_Z_6.svg)</br>
-Spades: ![](art/Slam_1_O_6.svg)</br>
-Hearts: ![](art/Slam_1_O_6.svg)</br>
-Diamonds: ![](art/Slam_1_O_6.svg)</br>
-Clubs: ![](art/Slam_1_O_6.svg)</br>
+Spades: ![](art/Slam_1_Spades_6.svg)</br>
+Hearts: ![](art/Slam_1_Hearts_6.svg)</br>
+Diamonds: ![](art/Slam_1_Diamonds_6.svg)</br>
+Clubs: ![](art/Slam_1_Clubs_6.svg)</br>
 
 ## Ultimate Challenges 1
 Start with first 4 pieces.
