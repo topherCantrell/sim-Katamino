@@ -1,4 +1,4 @@
-<svg width="330" height="60" xmlns="http://www.w3.org/2000/svg">
+<svg width="330" height="50" xmlns="http://www.w3.org/2000/svg">
     <g transform="translate(10,40)  scale(1)" style="fill:rgb(244,117,33);stroke-width:.05;stroke:#000">
         <polygon points="-5,5 -5,-35 15,-35 15,-25 5,-25 5,5"/>
     </g>    

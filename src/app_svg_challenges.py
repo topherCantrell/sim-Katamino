@@ -18,7 +18,7 @@ def get_svg_challenge(challenge, line_num):
             height = print_info[3]
 
     ret = ret + ('<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(
-        wid * 10 + 10, height * 10 + 20))
+        wid * 10 + 10, height * 10 + 10))
     xo = 10
     yo = 10
     for p in piece_names:
