@@ -9,6 +9,12 @@ https://www.google.com/search?q=possible+3d+shapes+with+5+cubes&tbm=isch&tbs=rim
 ## Small Slam 
 Start with first 3 pieces.
 
+| name | pieces |
+| ---- | ------ |
+| A | ![](art/Small_Slam_A_3.svg) |
+| B | ![](art/Small_Slam_B_3.svg) |
+| C | ![](art/Small_Slam_C_3.svg) |
+
 A: ![](art/Small_Slam_A_3.svg)</br>
 B: ![](art/Small_Slam_B_3.svg)</br>
 C: ![](art/Small_Slam_C_3.svg)</br>
