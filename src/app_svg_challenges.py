@@ -2,7 +2,8 @@ from challenges import CHALLENGES
 import piece_utils
 
 
-def print_svg_challenge(challenge, line_num):
+def get_svg_challenge(challenge, line_num):
+    ret = ''
     description = challenge['lines'][line_num]
     piece_names = description[description.index(':') + 1:]
     wid = 0
@@ -16,7 +17,7 @@ def print_svg_challenge(challenge, line_num):
         if print_info[1] > height:
             height = print_info[1]
 
-    print('<?xml version="1.0" encoding="UTF-8" ?>\n<svg width="{}" height="{}">'.format(
+    ret = ret + ('<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg">'.format(
         wid * 10 + 10, height * 10 + 20))
     xo = 10
     yo = 10
@@ -28,9 +29,18 @@ def print_svg_challenge(challenge, line_num):
             piece, xo + print_info[0] * 10, yo +
             print_info[1] * 10, print_pref,
             show_origin=False)
-        print(g)
+        ret = ret + (g)
         xo = xo + print_info[2] * 10 + 10
-    print('</svg>')
+    ret = ret + ('</svg>')
+    return ret
 
 
-print_svg_challenge(CHALLENGES[0], 0)
+for challenge in CHALLENGES:
+    title = challenge['title'].replace(' ', '_')
+    for n in range(len(challenge['lines'])):
+        line = challenge['lines'][n]
+        i = line.index(':')
+        cn = line[:i].replace('-', '_')
+        fname = title + '_' + cn
+        with open('../art/' + fname + '.svg', 'w') as f:
+            f.write(get_svg_challenge(challenge, n))

@@ -123,12 +123,12 @@ def place_piece(board, piece, x_cor, y_cor, rot):
 
 _SVG_ELEMENT = '''
     <g transform="translate({x},{y}) {trans} scale({scale})" style="fill:rgb({cr},{cg},{cb});stroke-width:.05;stroke:#000">
-        <polygon points="{points}">
+        <polygon points="{points}"/>
     </g>    
     '''
 _SVG_ELEMENT_ORG = '''    
     <g transform="translate({x},{y}) {trans} scale({scale})" style="fill:rgb(0,0,0);stroke-width:.05;stroke:#000">
-        <circle cx="0" cy="0" r="2">
+        <circle cx="0" cy="0" r="2"/>
     </g>
     '''
 

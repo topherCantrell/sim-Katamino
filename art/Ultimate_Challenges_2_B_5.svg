@@ -1,0 +1,45 @@
+<svg width="390" height="50" xmlns="http://www.w3.org/2000/svg">
+    <g transform="translate(10,40)  scale(1)" style="fill:rgb(244,117,33);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-35 15,-35 15,-25 5,-25 5,5"/>
+    </g>    
+    
+    <g transform="translate(40,10) rotate(90) scale(1)" style="fill:rgb(113,55,31);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 5,-5 5,-15 15,-15 15,-5 35,-5 35,5"/>
+    </g>    
+    
+    <g transform="translate(80,10) rotate(90) scale(1)" style="fill:rgb(56,46,141);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 25,-5 25,5 35,5 35,15 15,15 15,5"/>
+    </g>    
+    
+    <g transform="translate(100,10)  scale(1)" style="fill:rgb(15,160,219);stroke-width:.05;stroke:#000">
+        <polygon points="-5,-5 25,-5 25,25 15,25 15,5 -5,5"/>
+    </g>    
+    
+    <g transform="translate(140,10) rotate(90) scale(1)" style="fill:rgb(208,108,170);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 5,-5 5,-15 25,-15 25,5"/>
+    </g>    
+    
+    <g transform="translate(170,10)  scale(1)" style="fill:rgb(0,167,78);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 25,-5 25,5 15,5 15,25 5,25 5,5"/>
+    </g>    
+    
+    <g transform="translate(210,30)  scale(1)" style="fill:rgb(119,192,66);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 5,-5 5,-15 15,-15 15,-25 25,-25 25,-5 15,-5 15,5"/>
+    </g>    
+    
+    <g transform="translate(260,10)  scale(1)" style="fill:rgb(237,26,56);stroke-width:.05;stroke:#000">
+        <polygon points="-5,-5 5,-5 5,5 15,5 15,15 5,15 5,25 -5,25 -5,15 -15,15 -15,5 -5,5"/>
+    </g>    
+    
+    <g transform="translate(310,30)  scale(1)" style="fill:rgb(120,133,140);stroke-width:.05;stroke:#000">
+        <polygon points="5,5 -15,5 -15,-5 -25,-5 -25,-15 -15,-15 -15,-25 -5,-25 -5,-5 5,-5"/>
+    </g>    
+    
+    <g transform="translate(330,10) rotate(90) scale(1)" style="fill:rgb(60,123,191);stroke-width:.05;stroke:#000">
+        <polygon points="-5,5 -5,-5 45,-5 45,5"/>
+    </g>    
+    
+    <g transform="translate(370,30)  scale(1)" style="fill:rgb(0,176,211);stroke-width:.05;stroke:#000">
+        <polygon points="5,5 -15,5 -15,-15 -25,-15 -25,-25 -5,-25 -5,-5 5,-5"/>
+    </g>    
+    </svg>
