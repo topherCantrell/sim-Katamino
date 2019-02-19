@@ -1,5 +1,5 @@
 """
-Katamino Simulator
+Katamino Challenges from the manual
 """
 
 # These are the challenges as listed in the manual

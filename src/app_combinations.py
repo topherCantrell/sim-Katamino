@@ -5,6 +5,29 @@ import pieces
 import solutions_db
 import solver
 
+"""
+pieces = [
+    piece_utils.get_piece_by_letter('A'),
+    piece_utils.get_piece_by_letter('H'),
+    piece_utils.get_piece_by_letter('G'),
+    piece_utils.get_piece_by_letter('E'),
+    piece_utils.get_piece_by_letter('B'),
+    piece_utils.get_piece_by_letter('F'),
+    piece_utils.get_piece_by_letter('L'),
+    # piece_utils.get_piece_by_letter('D'),
+]
+
+board = board_utils.new_board(len(pieces))
+
+sols = []
+
+solve(board, pieces, sols)
+print()
+
+sols = cull(sols)
+print(sols)
+"""
+
 
 # n=12 pieces
 #
@@ -84,14 +107,14 @@ def solve_all_combos(num):
     print('Found {total} combos with solutions.'.format(total=with_solutions))
 
 
-#solve_all_combos(3)
+# solve_all_combos(3)
 # solve_all_combos(4)
 # solve_all_combos(5)
 # solve_all_combos(6)
-#solve_all_combos(7)
+# solve_all_combos(7)
 
 
-#solve_all_combos(8)
+# solve_all_combos(8)
 # solve_all_combos(9)
 # solve_all_combos(10)
 # solve_all_combos(11)

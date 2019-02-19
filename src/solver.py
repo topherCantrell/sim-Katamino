@@ -1,7 +1,7 @@
 import copy
-import board
 
-VERSION = '1.0'
+import board_utils
+import piece_utils
 
 
 def _rec_blanks(blanks, cur_set, current):
@@ -31,13 +31,13 @@ def ok_blanks(board):
     blanks = []
     for y in range(len(board)):
         for x in range(len(board[0])):
-            if board[y][x] == '.':
+            if board[y][x] == 0:
                 blanks.append((x, y))
     while blanks:
         cur_set = [blanks[0]]
         del blanks[0]
         _rec_blanks(blanks, cur_set, cur_set[0])
-        if len(cur_set) < 5:
+        if (len(cur_set) % 5) != 0:
             return False
 
     return True
@@ -48,41 +48,68 @@ def cull(sols):
     for s in sols:
         if s in ret:
             continue
-        if board.flip_left_right(s) in ret:
+        if board_utils.flip_left_right(s) in ret:
             continue
-        if board.flip_top_bottom(s) in ret:
+        if board_utils.flip_top_bottom(s) in ret:
             continue
-        if board.flip_top_bottom(board.flip_left_right(s)) in ret:
+        if board_utils.flip_top_bottom(board_utils.flip_left_right(s)) in ret:
             continue
         ret.append(s)
     return ret
 
 
-# 2/10/2019 # 9:00PM
+def solve(board, pieces, sols, index=0, stop_on_first=False, feedback_on=0):
+    """Recursively try pieces to find solutions.
 
-report_at = 3
-
-def solve(brd, pieces, index, sols, stop_on_first=False):
-    global report_at
-    """recursive solve"""
-    if index<=report_at:
-        print(index,end='',flush=True)
-    for rot in range(8):
-        for y in range(len(brd)):
-            for x in range(len(brd[0])):                
-                piece = pieces[index]
-                if not piece.can_place(brd, x, y, rot):
+    Params:
+       board: the board with the pieces tried so far already in place
+       pieces: the entire list of pieces to try
+       index: the current index in the list of pieces (next piece to try)
+       sols: growing list of solutions
+       stop_on_first: stop if we find a single solution
+    """
+    piece = pieces[index]
+    for u in piece['unique']:
+        for y in range(len(board)):
+            for x in range(len(board[0])):
+                if index == feedback_on:
+                    print('.', end='', flush=True)
+                rem = piece_utils.place_piece(
+                    board, piece, x, y, u, special_origin=False)
+                if not rem:
                     continue
-                piece.place(brd, x, y, rot)
-                if index == (len(pieces) - 1):
-                    b = copy.deepcopy(brd)
-                    sols.append(b)
-                    if stop_on_first:
-                        return True
+                if index == len(pieces) - 1:
+                    sols.append(copy.deepcopy(board))
                 else:
-                    if ok_blanks(brd):
-                        resp = solve(brd, pieces, index + 1, sols)
-                        if resp and stop_on_first:
-                            return True
-                piece.remove(brd, x, y, rot)
-    return False
+                    if ok_blanks(board):
+                        solve(board, pieces, sols, index +
+                              1, stop_on_first, feedback_on)
+                piece_utils.remove_piece(board, rem)
+
+
+"""
+pieces = [
+    piece_utils.get_piece_by_letter('A'),
+    piece_utils.get_piece_by_letter('B'),
+    piece_utils.get_piece_by_letter('C'),
+    piece_utils.get_piece_by_letter('D'),
+    piece_utils.get_piece_by_letter('E'),
+    piece_utils.get_piece_by_letter('F'),
+    piece_utils.get_piece_by_letter('G'),
+    piece_utils.get_piece_by_letter('H'),
+    piece_utils.get_piece_by_letter('I'),
+    # piece_utils.get_piece_by_letter('J'),
+    # piece_utils.get_piece_by_letter('K'),
+    # piece_utils.get_piece_by_letter('L'),
+]
+
+board = board_utils.new_board(len(pieces))
+
+sols = []
+
+solve(board, pieces, sols, feedback_on=0)
+print()
+
+sols = cull(sols)
+print(sols)
+"""

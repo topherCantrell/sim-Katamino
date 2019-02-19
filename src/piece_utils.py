@@ -97,18 +97,46 @@ for piece in PIECES:
     piece['draw'] = draw_ofs
 
 
-def place_piece(board, piece, x_cor, y_cor, rot):
-    '''Place the given piece on the board'''
+def get_piece_by_id(id):
+    return PIECES[id - 1]
+
+
+def get_piece_by_letter(letter):
+    letter = ord(letter) - 65
+    return PIECES[letter]
+
+
+def remove_piece(board, cells):
+    '''Reset a list of cells to 0s (remove a piece)'''
+    for cell in cells:
+        board[cell[1]][cell[0]] = 0
+
+
+def place_piece(board, piece, x_cor, y_cor, rot, special_origin=True):
+    '''Place the given piece on the board
+       Returns:
+           None if the piece doesn't fit
+           or an array of x/y that it overwrote
+    '''
     good = True
     placed = []
     token = piece['id']
     if board[y_cor][x_cor] != 0 and board[y_cor][x_cor] != token:
         return None
-    board[y_cor][x_cor] = -token
+    if special_origin:
+        board[y_cor][x_cor] = -token
+    else:
+        board[y_cor][x_cor] = token
     placed.append((x_cor, y_cor))
     for drw in piece['draw'][rot]:
         x_cor += drw[0]
         y_cor += drw[1]
+        if x_cor < 0 or x_cor >= len(board[0]):
+            good = False
+            break
+        if y_cor < 0 or y_cor >= len(board):
+            good = False
+            break
         if board[y_cor][x_cor] != 0 and board[y_cor][x_cor] != token:
             good = False
             break
@@ -131,10 +159,6 @@ _SVG_ELEMENT_ORG = '''
         <circle cx="0" cy="0" r="2"/>
     </g>
     '''
-
-
-def get_piece_by_id(id):
-    return PIECES[id - 1]
 
 
 def get_svg(piece, x_cor, y_cor, rot=0, scale=1, show_origin=True):

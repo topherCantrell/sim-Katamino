@@ -27,7 +27,7 @@ def get_string_rep(board):
 
 
 def strip_string_rep(brd):
-    '''Remove the space around the center of a board'''
+    '''Remove the space around the center of a board representation (not a board)'''
     b = brd.split('\n')
     li = len(b[0])
     lj = 0
@@ -51,3 +51,27 @@ def strip_string_rep(brd):
         g = b[i][li:lj + 1]
         b[i] = g
     return '\n'.join(b)
+
+
+def rotate_cw(board):
+    ret = []
+    for x in range(len(board[0])):
+        r = ''
+        for y in range(len(board) - 1, -1, -1):
+            r = r + board[y][x]
+        ret.append(r)
+    return ret
+
+
+def flip_top_bottom(board):
+    ret = []
+    for b in board:
+        ret.insert(0, b)
+    return ret
+
+
+def flip_left_right(board):
+    ret = []
+    for b in board:
+        ret.append(b[::-1])
+    return ret
