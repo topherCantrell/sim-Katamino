@@ -1,7 +1,7 @@
 import random
 
-import board
-import pieces
+import board_utils
+import piece_utils
 import solutions_db
 import solver
 
@@ -54,7 +54,7 @@ def make_combos(pieces, num):
         np = pieces[:]
         for _ in range(num):
             p = random.choice(np)
-            r.append(p.name)
+            r.append(p['name'])
             del np[np.index(p)]
         r = ''.join(sorted(r))
         if r not in ret:
@@ -78,18 +78,18 @@ def all_solveable_combos(num):
 
 
 def solve_all_combos(num):
-    combos = make_combos(pieces.PIECES, num)
+    combos = make_combos(piece_utils.PIECES, num)
     with_solutions = 0
     dotcnt = 0
     print('Solving {total} combinations of {num}:'.format(
         total=len(combos), num=num), end='', flush=True)
     for com in combos:
-        brd = board.new_board(num)
+        brd = board_utils.new_board(num)
         sols = []
         pies = []
         for n in com:
-            pies.append(pieces.get_piece_by_name(n))
-        solver.solve(brd, pies, 0, sols)
+            pies.append(piece_utils.get_piece_by_letter(n))
+        solver.solve(brd, pies, sols)
         print('.', end='', flush=True)
         dotcnt += 1
         if dotcnt % 25 == 0:
@@ -111,11 +111,11 @@ def solve_all_combos(num):
 # solve_all_combos(4)
 # solve_all_combos(5)
 # solve_all_combos(6)
-# solve_all_combos(7)
-
+solve_all_combos(7)
 
 # solve_all_combos(8)
+
 # solve_all_combos(9)
 # solve_all_combos(10)
 # solve_all_combos(11)
-solve_all_combos(12)
+# solve_all_combos(12)

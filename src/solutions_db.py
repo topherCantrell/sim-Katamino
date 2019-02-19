@@ -10,26 +10,6 @@ import json
 # Challenges is missing if it hasn't been determined.
 # Challenges is empty [] if the combination is not used in a challenge.
 
-'''
-{
-
-    'ABC' : {
-        'challenges' : ['slam 1,ultimate 2'],
-        'solutions' : [
-            {
-                'solver_version' : '1.22',
-                'solve_time' : '24',
-                'board','AAA......'
-            },
-            {}
-    },
-
-    'ADFL' : {
-    },
-
-}
-'''
-
 with open('solutions.js') as db_file:
     SOLUTION_DB = json.load(db_file)
 
@@ -57,9 +37,20 @@ def ensure_combination(comb):
 def set_solutions(comb, sols):
     """Set the solutions for the given piece combination"""
     comb = ''.join(sorted(comb))
-    ensure_combination(comb)
-    SOLUTION_DB[comb]['solutions'] = sols
-    _write_db()
+    if comb in SOLUTION_DB:
+        if sols:
+            sols.sort()
+        sols_org = SOLUTION_DB[comb]['solutions']
+        if sols_org:
+            sols_org.sort()
+        if sols != sols_org:
+            print(sols)
+            print(sols_org)
+            raise Exception('SOLVER MISMATCH')
+    else:
+        ensure_combination(comb)
+        SOLUTION_DB[comb]['solutions'] = sols
+        _write_db()
 
 
 def add_challenge(comb, chal):
