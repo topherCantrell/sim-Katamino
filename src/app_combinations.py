@@ -111,9 +111,9 @@ def solve_all_combos(num):
 # solve_all_combos(4)
 # solve_all_combos(5)
 # solve_all_combos(6)
-solve_all_combos(7)
+# solve_all_combos(7)
 
-# solve_all_combos(8)
+solve_all_combos(8)
 
 # solve_all_combos(9)
 # solve_all_combos(10)

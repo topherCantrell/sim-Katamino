@@ -37,7 +37,7 @@ def ensure_combination(comb):
 def set_solutions(comb, sols):
     """Set the solutions for the given piece combination"""
     comb = ''.join(sorted(comb))
-    if comb in SOLUTION_DB:
+    if comb in SOLUTION_DB and 'solutions' in SOLUTION_DB[comb]:
         if sols:
             sols.sort()
         sols_org = SOLUTION_DB[comb]['solutions']
