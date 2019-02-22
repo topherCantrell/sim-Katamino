@@ -28,12 +28,17 @@ def _rec_blanks(blanks, cur_set, current):
 
 
 def ok_blanks(board):
+    # return True
     blanks = []
     for y in range(len(board)):
         for x in range(len(board[0])):
             if board[y][x] == 0:
                 blanks.append((x, y))
+    stuck_count = 0
     while blanks:
+        stuck_count += 1
+        if stuck_count == 500:
+            raise Exception('We are stuck')
         cur_set = [blanks[0]]
         del blanks[0]
         _rec_blanks(blanks, cur_set, cur_set[0])
@@ -58,6 +63,17 @@ def cull(sols):
     return ret
 
 
+DOTCOUNT = 0
+
+
+def feedback(c):
+    global DOTCOUNT
+    print(c, end='', flush=True)
+    DOTCOUNT += 1
+    if DOTCOUNT % 25 == 0:
+        print()
+
+
 def solve(board, pieces, sols, index=0, stop_on_first=False, feedback_on=0):
     """Recursively try pieces to find solutions.
 
@@ -73,7 +89,7 @@ def solve(board, pieces, sols, index=0, stop_on_first=False, feedback_on=0):
         for y in range(len(board)):
             for x in range(len(board[0])):
                 if index == feedback_on:
-                    print('.', end='', flush=True)
+                    feedback('.')
                 rem = piece_utils.place_piece(
                     board, piece, x, y, u, special_origin=False)
                 if not rem:

@@ -89,11 +89,8 @@ def solve_all_combos(num):
         pies = []
         for n in com:
             pies.append(piece_utils.get_piece_by_letter(n))
+        solver.feedback('#')
         solver.solve(brd, pies, sols)
-        print('.', end='', flush=True)
-        dotcnt += 1
-        if dotcnt % 25 == 0:
-            print()
         if sols:
             # print(len(sols))
             sols = solver.cull(sols)
@@ -112,10 +109,10 @@ def solve_all_combos(num):
 # solve_all_combos(5)
 # solve_all_combos(6)
 # solve_all_combos(7)
+# solve_all_combos(8)
 
-solve_all_combos(8)
+solve_all_combos(9)
 
-# solve_all_combos(9)
-# solve_all_combos(10)
-# solve_all_combos(11)
-# solve_all_combos(12)
+# ? solve_all_combos(10)
+# ? solve_all_combos(11)
+# ? solve_all_combos(12)
