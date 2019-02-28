@@ -42,7 +42,7 @@ def add_solutions(comb, sols):
         # TODO we need an "in" function here that tries mirrors and rotates
         for sol in sols:
             if not sol in sols_org:
-                sols_org.append[sol]
+                sols_org.append(sol)
         _write_db()
     else:
         # No existing solutions ... these are new
