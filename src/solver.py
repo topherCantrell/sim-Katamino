@@ -3,6 +3,47 @@ import copy
 import board_utils
 import piece_utils
 
+''' 
+
+# Solving algorithms
+
+A board is an Nx5 grid, where N is the number of pieces in the set being played.
+
+A piece has a starting point (x,y) and a list of drawing directions to draw the piece.
+For instance "start at (2,2) and go right 1, up 1, right 1, and up 1". Each piece
+has several of these lists to account for rotations and flips. The shape of the piece
+determines how many different drawing lists it has. The '+' shaped piece, for instance,
+looks the same no matter how you rotate it or flip it. It only has 1 draw string.
+Some pieces have as many as 8 draw strings: four rotations, then flip over and four
+more rotations.
+
+The brute force solver tries every combination of starting points (x,y) on the
+board and every rotation of each piece at each starting point.
+
+There are Nx5 starting points. At a max, there are 8 rotations of each piece.
+
+(N*5*8)^N
+
+for 1 piece: (1*5*8)^1 = 40 tries
+for 2 pieces: (2*5*8)^2 = 6400 tries
+ 3: 1,728,000
+ 4: 655,360,000
+ 5: 3.2e11
+ 6: 1.9e14
+ 7: 1.4e17
+ 8: 1.1e20
+ 9: 1.0e23
+10: 1.0e26
+11: 1.2e29
+12: 1.5e32
+
+This is just the worst cases. Many pieces have fewer than 8 rotations. And we
+can abort the tries when we detect that the volume of a hole in the board created by
+the pieces is not a multiple of 5 (no need to try the rest of the pieces since none
+will fill the hole).
+
+'''
+
 
 def _rec_blanks(blanks, cur_set, current):
     test_cell = (current[0] + 1, current[1])

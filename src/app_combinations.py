@@ -112,7 +112,6 @@ def solve_all_combos(num):
 # solve_all_combos(8)
 # solve_all_combos(9)
 # solve_all_combos(10)
+# solve_all_combos(11)
 
-solve_all_combos(11)
-
-# ? solve_all_combos(12)
+solve_all_combos(12)
