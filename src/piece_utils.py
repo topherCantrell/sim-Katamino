@@ -1,5 +1,7 @@
 '''Info about the pieces'''
 
+import random
+
 PIECES = [  # 63 unique (not 12*8 = 96)
     {'id': 1, 'name': 'A', 'color': [244, 117, 33],
      'print_pref': 0,
@@ -170,3 +172,38 @@ def get_svg(piece, x_cor, y_cor, rot=0, scale=1, show_origin=True):
                                                     cr=piece['color'][0], cg=piece['color'][1], cb=piece['color'][2],
                                                     points=piece['poly'])
     return element
+
+# n=12 pieces
+#
+# r=1  :  12 combinations
+# r=2  :  66
+# r=3  : 220
+# r=4  : 495
+# r=5  : 792
+# r=6  : 924
+# r=7  : 792
+# r=8  : 495
+# r=9  : 220
+# r=10 :  66
+# r=11 :  12
+# r=12 :   1
+#
+# Total of 4095 (4096 = 2^12, if you count r=0)
+
+
+def make_combos(num):
+    """Make all possible combinations of N pieces."""
+    # TODO there is a programmatic way to generate these instead of random
+    pieces = PIECES
+    ret = []
+    for _ in range(100000):
+        r = []
+        np = pieces[:]
+        for _ in range(num):
+            p = random.choice(np)
+            r.append(p['name'])
+            del np[np.index(p)]
+        r = ''.join(sorted(r))
+        if r not in ret:
+            ret.append(r)
+    return ret

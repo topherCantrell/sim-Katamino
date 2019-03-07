@@ -104,8 +104,8 @@ def solve_all_combos(num):
     print('Found {total} combos with solutions.'.format(total=with_solutions))
 
 
-solve_all_combos(1)
-# solve_all_combos(2)
+# solve_all_combos(1)
+solve_all_combos(2)
 # solve_all_combos(3)
 # solve_all_combos(4)
 # solve_all_combos(5)
