@@ -1,7 +1,7 @@
 import solutions_db
 
 cnts = {
-    '1': 1,
+    '1': 0,
     '2': 0,
     '3': 0,
     '4': 0,
