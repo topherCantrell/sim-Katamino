@@ -23,6 +23,13 @@ for key in sorted_keys:
             #raise Exception('Invalidd:' + key)
             print('Invalidd:' + key)
 
+num_sols = 0
+for entry in db:
+    if 'solutions' in db[entry]:
+        if db[entry]['solutions']:
+            num_sols += len(db[entry]['solutions'])
+
+print('Total solution boards', num_sols)
 
 '''
 # Should be 4095 (no entry for no-pieces)

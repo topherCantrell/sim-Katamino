@@ -16,10 +16,13 @@ def main():
             pies = line[j + 1:]
 
             for pos in range(start_pos, len(pies)):
-                comb = pies[0:pos]
-                #print(comb, challenge['title'] + ':' + name)
+                comb = pies[0:pos + 1]
+
+                #print(comb, challenge['title'] + ':' + name + ':' + comb)
+
                 solutions_db.add_challenge(
                     comb, challenge['title'] + ':' + name)
 
 
-main()
+if __name__ == '__main__':
+    main()
