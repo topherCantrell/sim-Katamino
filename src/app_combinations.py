@@ -103,16 +103,48 @@ def solve_all_combos(num):
     print()
     print('Found {total} combos with solutions.'.format(total=with_solutions))
 
+def solve_all_combos_multi(num):
+    combos = make_combos(piece_utils.PIECES, num)
+    combos.sort()    
+    print('Solving {total} combinations of {num}:'.format(
+        total=len(combos), num=num))
+    boards_with_solutions = []
+    for com in combos:        
+        for bd in board_utils.BOARDS_FOR_PIECES[num]:
+            with_solutions = 0
+            print('---------- Board',bd,com,'----------')
+            brd = board_utils.new_board(bd[0],bd[1])
+            sols = []
+            pies = []
+            for n in com:
+                pies.append(piece_utils.get_piece_by_letter(n))
+            solver.feedback('#')
+            solver.solve(brd, pies, sols)        
+            if sols:
+                sols = solver.cull(sols)
+                #solutions_db.set_solutions(com, sols)
+                with_solutions += 1
+            else:
+                #solutions_db.set_solutions(com, None)
+                pass
 
-# solve_all_combos(1)
-solve_all_combos(2)
-# solve_all_combos(3)
-# solve_all_combos(4)
-# solve_all_combos(5)
-# solve_all_combos(6)
-# solve_all_combos(7)
-# solve_all_combos(8)
-# solve_all_combos(9)
-# solve_all_combos(10)
-# solve_all_combos(11)
-# solve_all_combos(12)
+            print()
+            print('Found {total} combos with solutions.'.format(total=with_solutions))
+            if with_solutions:
+                if bd not in boards_with_solutions:
+                    boards_with_solutions.append(bd)
+        print()
+    print('Boards with solutions',boards_with_solutions)
+
+#solve_all_combos_multi(1) # [1,5]
+#solve_all_combos_multi(2) # (No solutions)
+#solve_all_combos_multi(3) # [3, 5]
+#solve_all_combos_multi(4) # [4, 5], [2, 10]
+#solve_all_combos_multi(5) # [5,5]
+#solve_all_combos_multi(6) # [6, 5], [3, 10]
+#solve_all_combos_multi(7) # [7, 5]
+solve_all_combos_multi(8)
+# solve_all_combos_multi(9)
+# solve_all_combos_multi(10)
+# solve_all_combos_multi(11)
+# ? solve_all_combos_multi(12)
