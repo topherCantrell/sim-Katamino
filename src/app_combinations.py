@@ -122,6 +122,7 @@ def solve_all_combos_multi(num):
             solver.solve(brd, pies, sols)        
             if sols:
                 sols = solver.cull(sols)
+                solutions_db.add_solutions(com,sols)
                 #solutions_db.set_solutions(com, sols)
                 with_solutions += 1
             else:
@@ -143,8 +144,10 @@ def solve_all_combos_multi(num):
 #solve_all_combos_multi(5) # [5,5]
 #solve_all_combos_multi(6) # [6, 5], [3, 10]
 #solve_all_combos_multi(7) # [7, 5]
-solve_all_combos_multi(8)
+# solve_all_combos_multi(8)
 # solve_all_combos_multi(9)
 # solve_all_combos_multi(10)
+
 # solve_all_combos_multi(11)
-# ? solve_all_combos_multi(12)
+
+solve_all_combos_multi(12)

@@ -37,7 +37,7 @@ def ensure_combination(comb):
 def add_solutions(comb, sols):
     """Add solutions to the existing solutions for the given piece combination"""
     comb = ''.join(sorted(comb))
-    if comb in SOLUTION_DB and 'solutions' in SOLUTION_DB[comb]:
+    if (comb in SOLUTION_DB) and ('solutions' in SOLUTION_DB[comb]) and (SOLUTION_DB[comb]['solutions'] !=None):
         sols_org = SOLUTION_DB[comb]['solutions']
         # TODO we need an "in" function here that tries mirrors and rotates
         for sol in sols:
@@ -46,8 +46,13 @@ def add_solutions(comb, sols):
         _write_db()
     else:
         # No existing solutions ... these are new
-        set_solutions(comb, sols)
+        force_set_solutions(comb, sols)
 
+def force_set_solutions(comb,sols):
+    comb = ''.join(sorted(comb))
+    ensure_combination(comb)
+    SOLUTION_DB[comb]['solutions'] = sols
+    _write_db()
 
 def set_solutions(comb, sols):
     """Set the solutions for the given piece combination"""
