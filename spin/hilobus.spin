@@ -1,49 +1,46 @@
-CON
-  _clkmode        = xtal1 + pll16x
-  _xinfreq        = 5_000_000
+{{
+ Left is always  StartRxTx(31, 30, 0, baudrate)
+ Right is always StartRxTx( 1,  0, 0, baudrate)
 
-' Left is always  StartRxTx(31, 30, 0, baudrate)
-' Right is always StartRxTx( 1,  0, 0, baudrate)
-'
-' HI/LO SERIAL BUS
-'
-' There are two serial ports: "left" (lower) and "right" (higher).
-' The host should be the far left. 
-'
-' Typical message:
-' {"to":"3A", ... }
-'
-' Messages are JSON format. The serial-bus module includes code to
-' parse JSON. All messages must be objects "{...}"
-'
-' Messages are sent left or right depending on the "to" number. Smaller
-' numbers go left. Larger go right. Nodes forward messages that are
-' not meant for them. Addresses are always 2 characters: chip number and
-' queue name (see below).
-'
-' The very first message sent to a node is {"to": "@N"}, where "N" is the
-' number/letter of the chip. This always comes in on the LOWER port. This tells
-' the chip what's its "to" address number is. The node then adds one and sends
-' the message to the UPPER. Thus the addressing ripples down the chain left to
-' right. These messages are also sent to all queues -- a signal for nodes that
-' the bus is ready.
-'
-' There are five separate message queues A, B, C, D, and E. Messages to the
-' target nodes are routed to the specific queue. Nodes are hardcoded to a
-' fixed queue.
-'
-' A message queue can hold TWO messages only. Others are ignored.
-'
-' Messages {"to":"**" ...} are forwarded to all queues on all chips.
-' Messages {"to":"2*" ...} are forwarded to all queues on chip 2.
-'
-' API
-'   get_message():ptr - returns a pointer to the current JSON or 0 if there is no message
-'   clear_message()   - removes the current message from the queue
-'   send_message(msg) - puts the message on the bus  
+ HI/LO SERIAL BUS
+
+ There are two serial ports: "left" (lower) and "right" (higher).
+ The host should be the far left. 
+
+ Typical message:
+ {"to":"3A", ... }
+
+ Messages are JSON format. The serial-bus module includes code to
+ parse JSON. All messages must be objects "{...}"
+
+ Messages are sent left or right depending on the "to" number. Smaller
+ numbers go left. Larger go right. Nodes forward messages that are
+ not meant for them. Addresses are always 2 characters: chip number and
+ queue name (see below).
+
+ The very first message sent to a node is {"to": "@N"}, where "N" is the
+ number/letter of the chip. This always comes in on the LOWER port. This tells
+ the chip what's its "to" address number is. The node then adds one and sends
+ the message to the UPPER. Thus the addressing ripples down the chain left to
+ right. These messages are also sent to all queues -- a signal for nodes that
+ the bus is ready.
+
+ There are five separate message queues A, B, C, D, and E. Messages to the
+ target nodes are routed to the specific queue. Nodes are hardcoded to a
+ fixed queue.
+
+ A message queue can hold ONE message only. Others are ignored.
+
+ Messages {"to":"**" ...} are forwarded to all queues on all chips.
+ Messages {"to":"2*" ...} are forwarded to all queues on chip 2.
+
+ API
+   get_message(q):ptr - returns a pointer to the current JSON or 0 if there is no message
+   clear_message(ptr) - releases the message pointer
+   send_message(msg)  - puts the message on the bus  
+}}
 
 CON
-
     LEFT_TX     =   30
     LEFT_RX     =   31
     
@@ -51,16 +48,16 @@ CON
     RIGHT_RX    =   1
     
     BAUDRATE    =   115200
-    QUEUE_SIZE  =   512
-    NUM_QUEUES  =   5
+    QUEUE_SIZE  =   512      ' Max size of a message
+    NUM_QUEUES  =   5        ' Number of node-queues
 
     COM_IDLE          = 0
     COM_GET_MESSAGE   = 1
     COM_CLEAR_MESSAGE = 2
     COM_SEND_MESSAGE  = 3
+    COM_BUSY          = 4  ' Processed ... waiting on the sender to release
 
-CON
-
+CON ' DEBUG
     TEST_LED_GREEN     = 2
     TEST_LED_RED       = 3
     TEST_LED_YELLOW    = 4
@@ -69,20 +66,19 @@ CON
 
 VAR
     long  param_command  ' Set to one of the COM_ constants above
-    long  param_argument ' The send_message needs a pointer
+    long  param_argument ' Argument to the request (be sure to set this BEFORE the command)
     long  param_return   ' The get_message returns a pointer
 
-    byte chip_number
+    byte chip_number     ' Our char (or 0 if not set)
 
-    byte msg_buffers[QUEUE_SIZE * NUM_QUEUES * 2] 
-    byte current_read_buffer[NUM_QUEUES]
-    
+    ' Each node gets 1 queue
+    byte msg_buffers[QUEUE_SIZE * NUM_QUEUES]     
+
+    ' Left/Right messages as they come in
     byte tmp_queue_left[QUEUE_SIZE]
     byte tmp_queue_right[QUEUE_SIZE]    
     byte tmp_queue_left_idx
-    byte tmp_queue_right_idx
-    
-    byte queues[NUM_QUEUES * QUEUE_SIZE]
+    byte tmp_queue_right_idx  
      
 OBJ
     SER_LEFT  : "Parallax Serial Terminal"
@@ -110,65 +106,91 @@ pri doTest
     outa[TEST_LED_RED] := !ina[TEST_BUTTON_RED]
     outa[TEST_LED_YELLOW] := !ina[TEST_BUTTON_YELLOW]  
 
-PUB run
+PUB run | i
 ' Never returns
 
-  initTest
+  initTest ' DEBUG
 
+  ' Clear the incoming command
   param_command := COM_IDLE
-  tmp_queue_left_idx := 0
-  tmp_queue_right_idx := 0
 
-  current_read_buffer := 0
+  ' Clear the serial queues
+  tmp_queue_left_idx := 0
+  tmp_queue_right_idx := 0    
 
   chip_number := 0 ' Will be an ascii number when set
-  
+
+  ' Clear out the queues
+  repeat i from 0 to (QUEUE_SIZE * NUM_QUEUES-1)
+    msg_buffers[i] := 0 
+
+  ' Start the serial ports
   SER_LEFT.StartRxTx ( LEFT_RX,  LEFT_TX, 0, BAUDRATE)
   SER_RIGHT.StartRxTx(RIGHT_RX, RIGHT_TX, 0, BAUDRATE)
 
   repeat
     check_incoming
-    'check_command
+    check_command
 
-PRI process_message(source_port, msg) | chip,queue
+PRI process_message(source_port, msg) | chip,queue,i,nq,p,q
+
+  ' {"to":"cq", ...}
+  ' c = chip (or * or @)
+  ' q = queue (or *)
 
   chip := byte[msg+7]
   queue := byte[msg+8]
 
+  ' Special message: set our chip-number
   if chip=="@"
     ' This is a "set-chip-number" message
     chip_number := queue
-    byte[@SET_CHIP_NUM_MESSAGE+8] := queue + 1
+    byte[msg+8] := queue + 1
 
     ' Tell the next chip in line (to the right)
-    SER_RIGHT.str(@SET_CHIP_NUM_MESSAGE)
+    SER_RIGHT.str(msg)
     return
+  
+  ' We might need to send this message to our queues          
+  if chip == chip_number or chip == "*"
+  ' ' This is meant for us ... send it to the queue(s).
+    ' We have no way of knowing which node sourced the message, so if
+    ' you are local and you are broadcasting to this chip then you'll
+    ' get a copy too.
 
+    nq := nq - "A" ' ASCII name (A,B,C,D,...) to index (0,1,2,3,...)
+    repeat i from 0 to (NUM_QUEUES-1)
+      ' If this msg was directed to the queue directly or broadcast
+      if queue=="*" or i==nq
+        ' If the message buffer is not free, we drop this message.
+        if msg_buffers[i*QUEUE_SIZE] == 0
+          ' Copy msg to the queue
+          p := msg
+          q := @msg_buffers+i*QUEUE_SIZE
+          repeat while byte[p]<>0
+            byte[q] := byte[p]
+            q := q + 1
+            p := p + 1
+          ' Terminate the message
+          byte[q] := 0
+          
+  ' Special message: needs to be broadcast
   if chip == "*"
-    ' Broadcast 
+    ' Broadcast left and/or right 
     if source_port==2
       ' Broadcast from us (to left and right)
       SER_LEFT.str(msg)
       SER_RIGHT.str(msg)
+      return      
     elseif source_port==0
       ' Broadcast from left (to right)
       SER_RIGHT.str(msg)
     else
       ' Broadcast from right (to left)
-      SER_LEFT.str(msg)     
+      SER_LEFT.str(msg)
     return
-            
-  if chip == chip_number
-    ' This is meant for us ... send it to the queue(s)
-    if chip=="A" or chip=="*"
-      setTest(2,1)
-    if chip=="B" or chip=="*"
-      setTest(3,1)
-    if chip=="C" or chip=="*"
-      setTest(4,1)
-    ' TODO send to queues
-    return  
 
+  ' Route this message left or right
   if chip < chip_number
     ' Going LEFT
     SER_LEFT.str(msg)
@@ -194,26 +216,46 @@ PRI check_incoming | c
         process_message(0,@tmp_queue_left)
         tmp_queue_left_idx := 0
         
-  'if SER_RIGHT.RxCount>0
-  '  c := SER_RIGHT.CharIn
-  '  if tmp_queue_right_idx == 0
-  '    ' Start of a message? Must be JSON object. Wait till we see one.
-  '    if c <> "{"
-  '      return
-  '    tmp_queue_right[tmp_queue_right_idx] := c
-  '    tmp_queue_right_idx := tmp_queue_right_idx + 1
-  '  else
-  '    tmp_queue_right[tmp_queue_right_idx] := c
-  '    tmp_queue_right_idx := tmp_queue_right_idx + 1      
-  '    if c=="}"
-  '      process_message(1,tmp_queue_left)
-  '      tmp_queue_right_idx := 0
-  '      tmp_queue_right[tmp_queue_right_idx] := 0  
+  if SER_RIGHT.RxCount>0
+    c := SER_RIGHT.CharIn
+    if tmp_queue_right_idx == 0
+      ' Start of a message? Must be JSON object. Wait till we see one.
+      if c <> "{"
+        return
+      tmp_queue_right[tmp_queue_right_idx] := c
+      tmp_queue_right_idx := tmp_queue_right_idx + 1
+    else
+      tmp_queue_right[tmp_queue_right_idx] := c
+      tmp_queue_right_idx := tmp_queue_right_idx + 1      
+      if c=="}"
+        tmp_queue_right[tmp_queue_right_idx] := 0
+        process_message(1,@tmp_queue_right)
+        tmp_queue_right_idx := 0
 
-PRI check_command
+PRI check_command | p
 
-DAT
+  ' TODO a semaphor to syncronize access to the param_command
+  
+  ' COM_GET_MESSAGE   = 1
+  ' COM_CLEAR_MESSAGE = 2
+  ' COM_SEND_MESSAGE  = 3
 
-SET_CHIP_NUM_MESSAGE
-  '     {"to":"@?"}
-  byte "{",$22,"to",$22,":",$22,"@",0,$22,"}",0
+  if param_command == COM_GET_MESSAGE
+    p := @msg_buffers + param_argument*QUEUE_SIZE
+    if byte[p] == 0
+      param_return := 0
+    else
+      param_return := 0
+    param_command := COM_BUSY
+    
+  elseif param_command == COM_CLEAR_MESSAGE
+    byte[param_argument] := 0
+    param_return := 0
+    param_command := COM_BUSY
+    
+  elseif param_command == COM_SEND_MESSAGE
+    process_message(3, param_argument)
+    param_return := 0
+    param_command := COM_BUSY
+
+  ' TODO release the semaphor   
