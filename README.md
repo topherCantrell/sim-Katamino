@@ -2,6 +2,15 @@
 
 Code to solve katamino challenges
 
+The manual has a mistake in it. Ultimate Challenges 1:I. The following combinations are listed in the manual, but the 
+piece "D" is listed twice.
+
+```
+Invalid:ABDDEFIKL
+Invalid:ABDDEFGIKL
+Invalid:ABDDEFGIJKL
+```
+
 ![](art/katamino.svg)
 
 https://www.google.com/search?q=possible+3d+shapes+with+5+cubes&tbm=isch&tbs=rimg:CSQNxJ8fsWNSIji-ofdqClu2ABhBarS7FeGapRDWeLUNxs1qRnl89sVA2tzEDn816YWH_1HY5yH10NA-_17-HXsPY8gioSCb6h92oKW7YAEaB9T9vB-0ULKhIJGEFqtLsV4ZoRvRWnFOCe1FEqEgmlENZ4tQ3GzRGgfU_1bwftFCyoSCWpGeXz2xUDaEQVNX4nbK_1LQKhIJ3MQOfzXphYcRTIrUAaKHh6AqEgn8djnIfXQ0DxGgfU_1bwftFCyoSCb_1v4dew9jyCEYM14tV58aja&tbo=u&sa=X&ved=2ahUKEwjm6eXIoKrgAhUWoYMKHbGyCWgQ9C96BAgBEBs&biw=1472&bih=773&dpr=1#imgrc=DP2sMs4PxF6rnM:

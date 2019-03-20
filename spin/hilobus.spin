@@ -22,12 +22,11 @@
  number/letter of the chip. This always comes in on the LOWER port. This tells
  the chip what's its "to" address number is. The node then adds one and sends
  the message to the UPPER. Thus the addressing ripples down the chain left to
- right. These messages are also sent to all queues -- a signal for nodes that
- the bus is ready.
+ right.
 
- There are five separate message queues A, B, C, D, and E. Messages to the
- target nodes are routed to the specific queue. Nodes are hardcoded to a
- fixed queue.
+ There are (up to) five separate message queues A, B, C, D, and E: one for the
+ available 5 COGs. Three COGs are used in the bus. Messages to the target nodes
+ are routed to the specific queue. Nodes are hardcoded to a fixed queue.
 
  A message queue can hold ONE message only. Others are ignored.
 
@@ -37,7 +36,23 @@
  API
    get_message(q):ptr - returns a pointer to the current JSON or 0 if there is no message
    clear_message(ptr) - releases the message pointer
-   send_message(msg)  - puts the message on the bus  
+   send_message(msg)  - puts the message on the bus
+
+   - acquire the lock with "repeat until not lockset(param_lock_id)"
+   - write any parameter
+   - write the command
+   - wait for the command to go to 0
+   - read any return value
+   - release the lock with "lockclr(param_lock_id)
+
+ SYNCHRONIZATION:
+ 
+ All nodes share the common parameter block.
+
+ Nodes must acquire the lock using "lockset(param_lock_id)" before writing to the
+ command parameters. Nodes must release the lock using "lockclr(param_lock_id")
+ after they have written the command trigger.
+ 
 }}
 
 CON
@@ -55,21 +70,13 @@ CON
     COM_GET_MESSAGE   = 1
     COM_CLEAR_MESSAGE = 2
     COM_SEND_MESSAGE  = 3
-    COM_BUSY          = 4  ' Processed ... waiting on the sender to release
-
-CON ' DEBUG
-    TEST_LED_GREEN     = 2
-    TEST_LED_RED       = 3
-    TEST_LED_YELLOW    = 4
-    TEST_BUTTON_RED    = 5
-    TEST_BUTTON_YELLOW = 6
 
 VAR
     long  param_command  ' Set to one of the COM_ constants above
     long  param_argument ' Argument to the request (be sure to set this BEFORE the command)
-    long  param_return   ' The get_message returns a pointer
-
-    byte chip_number     ' Our char (or 0 if not set)
+    long  param_return   ' The get_message returns a pointer (READONLY)
+    long  param_lock_id  ' The LOCKNEW id used to sync sharing messages (READONLY)
+    long  chip_number    ' Our char (or 0 if not set) (READONLY)
 
     ' Each node gets 1 queue
     byte msg_buffers[QUEUE_SIZE * NUM_QUEUES]     
@@ -82,34 +89,16 @@ VAR
      
 OBJ
     SER_LEFT  : "Parallax Serial Terminal"
-    SER_RIGHT : "Parallax Serial Terminal"
+    SER_RIGHT : "Parallax Serial Terminal" 
 
-pri initTest
-  dira[TEST_LED_GREEN] := 1
-  outa[TEST_LED_GREEN] := 0
-  dira[TEST_LED_RED] := 1
-  outa[TEST_LED_RED] := 0
-  dira[TEST_LED_YELLOW] := 1
-  outa[TEST_LED_YELLOW] := 0  
-  dira[TEST_BUTTON_RED] := 0
-  dira[TEST_BUTTON_YELLOW] := 0 
-
-pri getTest(p)
-  return !ina[p]
-
-pri setTest(p,val)
-  outa[p] := val
-
-pri doTest
-  initTest
-  repeat
-    outa[TEST_LED_RED] := !ina[TEST_BUTTON_RED]
-    outa[TEST_LED_YELLOW] := !ina[TEST_BUTTON_YELLOW]  
-
-PUB run | i
-' Never returns
-
-  initTest ' DEBUG
+PUB init | i
+  ' This is for all the nodes to synchronize using the single
+  ' command parameter block.
+  '
+  ' We don't need this lock in the bus code. As far as we are
+  ' concerned, the universe is US and NODE. It is up to the
+  ' nodes to decide which one of them is NODE.
+  param_lock_id := locknew
 
   ' Clear the incoming command
   param_command := COM_IDLE
@@ -128,6 +117,13 @@ PUB run | i
   SER_LEFT.StartRxTx ( LEFT_RX,  LEFT_TX, 0, BAUDRATE)
   SER_RIGHT.StartRxTx(RIGHT_RX, RIGHT_TX, 0, BAUDRATE)
 
+PUB getParamAddr
+  return @param_command
+  
+PUB run
+
+  ' Never returns (takes the cog) 
+
   repeat
     check_incoming
     check_command
@@ -144,10 +140,10 @@ PRI process_message(source_port, msg) | chip,queue,i,nq,p,q
   ' Special message: set our chip-number
   if chip=="@"
     ' This is a "set-chip-number" message
-    chip_number := queue
-    byte[msg+8] := queue + 1
+    chip_number := queue        
 
     ' Tell the next chip in line (to the right)
+    byte[msg+8] := queue + 1
     SER_RIGHT.str(msg)
     return
   
@@ -159,6 +155,7 @@ PRI process_message(source_port, msg) | chip,queue,i,nq,p,q
     ' get a copy too.
 
     nq := nq - "A" ' ASCII name (A,B,C,D,...) to index (0,1,2,3,...)
+        
     repeat i from 0 to (NUM_QUEUES-1)
       ' If this msg was directed to the queue directly or broadcast
       if queue=="*" or i==nq
@@ -233,29 +230,29 @@ PRI check_incoming | c
         tmp_queue_right_idx := 0
 
 PRI check_command | p
-
-  ' TODO a semaphor to syncronize access to the param_command
-  
+      
   ' COM_GET_MESSAGE   = 1
   ' COM_CLEAR_MESSAGE = 2
   ' COM_SEND_MESSAGE  = 3
+
+  if param_command == COM_IDLE
+    return
 
   if param_command == COM_GET_MESSAGE
     p := @msg_buffers + param_argument*QUEUE_SIZE
     if byte[p] == 0
       param_return := 0
     else
-      param_return := 0
-    param_command := COM_BUSY
+      param_return := p    
     
   elseif param_command == COM_CLEAR_MESSAGE
     byte[param_argument] := 0
-    param_return := 0
-    param_command := COM_BUSY
+    param_return := 0        
     
   elseif param_command == COM_SEND_MESSAGE
     process_message(3, param_argument)
     param_return := 0
-    param_command := COM_BUSY
 
-  ' TODO release the semaphor   
+  ' Whatever it was, we are done with it
+  param_command := COM_IDLE
+ 
