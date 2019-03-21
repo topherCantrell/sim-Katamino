@@ -118,11 +118,13 @@ def get_solutions_for_board_sizes():
 
 # clean_challenges()
 # find_remove_invalid_combos()
-verify_all_combinations_have_been_tried()
-get_total_solution_boards()
-get_solutions_for_board_sizes()
+# verify_all_combinations_have_been_tried()
+# get_total_solution_boards()
+# get_solutions_for_board_sizes()
 
-sols = solutions_db.get_solutions_for_board_size(3, 20)
-print(sols)
+#sols = solutions_db.get_solutions_for_board_size(3, 20)
+# print(sols)
 
 #print(solutions_db.get_solutions_for_challenge('Ultimate Challenges 4:No3'))
+
+print(solutions_db.get_solutions('AGH'))

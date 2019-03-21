@@ -1,3 +1,45 @@
+{{
+
+Messages are pure text. Numbers in the text are two digit decimal.
+
+Configure message:
+
+  "*" = "wwhh..........nnAxxyymm0011,1122,3333:Bxxyymm1111" 
+
+  First the initial board. wwhh (width,height) followed by w*h characters.
+  Then nn is the current piece.
+  Then the piece-info list with entries separated by ":"
+    The first character is the token.
+    xx,yy are the current X,Y coordinates
+    mm is the current draw string
+    Next is the list of draw strings separated by ","    
+
+Status request:
+
+  "?" = True
+
+Response message to status request:
+
+  "status" = 
+    "!" if there is no solution to send (still working)
+    "*" if the process is complete (also the initial state before config)                    
+    "wwhh..........nnAxxyymm0011,1122,3333:Bxxyymm1111" return the current state if a solution is found
+
+Algorithm
+
+  - Load the config
+  - Parse out the board width,height
+  - Make a copy of the board for resetting
+
+  - REPEAT    
+    - Draw current state
+    - If success, hold for retrieval
+    - Respond to any requests (including new config) 
+    - Reset the board
+    - Advance the pointer set (detect the end)
+
+}}
+
 CON
   _clkmode        = xtal1 + pll16x
   _xinfreq        = 5_000_000
@@ -49,6 +91,8 @@ PUB run | p
 
 pri controlLED(params,queue,pin) : lock_id
 
+  initTest
+  
   ' {"to":"cq","on":True}
   ' {"to":"cq","on":False}
   
@@ -66,6 +110,9 @@ pri controlLED(params,queue,pin) : lock_id
   ' release the lock  
 
 pri handleButton(params,queue,pin) : lock_id
+
+  initTest
+  
   lock_id := long[params+12]
   
   ' TODO Magic here

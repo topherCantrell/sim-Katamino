@@ -72,11 +72,14 @@ CON
     COM_SEND_MESSAGE  = 3
 
 VAR
+    ' ---------------------------------------------------------------
     long  param_command  ' Set to one of the COM_ constants above
     long  param_argument ' Argument to the request (be sure to set this BEFORE the command)
     long  param_return   ' The get_message returns a pointer (READONLY)
+    '
     long  param_lock_id  ' The LOCKNEW id used to sync sharing messages (READONLY)
     long  chip_number    ' Our char (or 0 if not set) (READONLY)
+    ' ---------------------------------------------------------------
 
     ' Each node gets 1 queue
     byte msg_buffers[QUEUE_SIZE * NUM_QUEUES]     
