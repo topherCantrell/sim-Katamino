@@ -66,10 +66,6 @@ CON
     QUEUE_SIZE  =   512      ' Max size of a message
     NUM_QUEUES  =   5        ' Number of node-queues
 
-    COM_IDLE          = 0
-    COM_GET_MESSAGE   = 1
-    COM_SEND_MESSAGE  = 2
-
 VAR
     ' ---------------------------------------------------------------
     long  param_command  ' Set to one of the COM_ constants above
@@ -90,8 +86,9 @@ VAR
     byte tmp_queue_right_idx  
      
 OBJ
-    SER_LEFT  : "Parallax Serial Terminal"
-    SER_RIGHT : "Parallax Serial Terminal" 
+    SER_LEFT  : "Parallax Serial Terminal"    
+    SER_RIGHT : "Parallax Serial Terminal"
+    API:        "hilobus_api" 
 
 CON ' DEBUG
     TEST_LED_GREEN     = 2
@@ -126,7 +123,7 @@ PUB init | i
   param_lock_id := locknew
 
   ' Clear the incoming command
-  param_command := COM_IDLE
+  param_command := API#COM_IDLE
 
   ' Clear the serial queues
   tmp_queue_left_idx := 0
@@ -260,23 +257,22 @@ PRI check_incoming | c
 PRI check_command | p
       
   ' COM_GET_MESSAGE   = 1
-  ' COM_CLEAR_MESSAGE = 2
-  ' COM_SEND_MESSAGE  = 3
+  ' COM_SEND_MESSAGE  = 2
 
-  if param_command == COM_IDLE
+  if param_command == API#COM_IDLE
     return                   
 
-  if param_command == COM_GET_MESSAGE    
+  if param_command == API#COM_GET_MESSAGE    
     p := @msg_buffers + (param_argument-"A")*QUEUE_SIZE
     if byte[p] == 0      
       param_return := 0
     else      
       param_return := p    
     
-  elseif param_command == COM_SEND_MESSAGE
+  elseif param_command == API#COM_SEND_MESSAGE
     process_message(3, param_argument)
     param_return := 0
 
   ' Whatever it was, we are done with it
-  param_command := COM_IDLE
+  param_command := API#COM_IDLE
  

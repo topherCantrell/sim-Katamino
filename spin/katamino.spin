@@ -53,6 +53,7 @@ CON ' DEBUG
 
 OBJ
   bus : "hilobus"
+  API : "hilobus_api"
 
 pri initTest
   dira[TEST_LED_GREEN] := 1
@@ -95,24 +96,15 @@ pri controlLED(params,queue,pin) | lock_id, p
      
   ' {"to":"cq","on":true}
   ' {"to":"cq","on":false}
-  
-  lock_id := long[params+12]
-
-  repeat while long[params]<>0    
-        
+   
   repeat
-    repeat until not lockset(lock_id)
-    long[params+4] := queue
-    long[params] := bus#COM_GET_MESSAGE
-    repeat while long[params]<>0
-    p := long[params+8]
+    p := API.get_message(params,queue)
     if p <> 0
       if byte[p+17] == "t"
         setTestLED(pin,1)
       else
         setTestLED(pin,0)
-      byte[p] := 0
-    lockclr(lock_id)  
+    API.release_message(params,p)  
   
   ' TODO Magic here
 
@@ -129,8 +121,7 @@ pri controlLED(params,queue,pin) | lock_id, p
 pri handleButton(params,queue,pin) : lock_id
 
   initTest
-  
-  lock_id := long[params+12]
+
   
   ' TODO Magic here
 
