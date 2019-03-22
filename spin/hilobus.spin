@@ -68,8 +68,7 @@ CON
 
     COM_IDLE          = 0
     COM_GET_MESSAGE   = 1
-    COM_CLEAR_MESSAGE = 2
-    COM_SEND_MESSAGE  = 3
+    COM_SEND_MESSAGE  = 2
 
 VAR
     ' ---------------------------------------------------------------
@@ -94,6 +93,29 @@ OBJ
     SER_LEFT  : "Parallax Serial Terminal"
     SER_RIGHT : "Parallax Serial Terminal" 
 
+CON ' DEBUG
+    TEST_LED_GREEN     = 2
+    TEST_LED_RED       = 3
+    TEST_LED_YELLOW    = 4
+    TEST_BUTTON_RED    = 5
+    TEST_BUTTON_YELLOW = 6
+    
+pri initTest
+  dira[TEST_LED_GREEN] := 1
+  outa[TEST_LED_GREEN] := 0
+  dira[TEST_LED_RED] := 1
+  outa[TEST_LED_RED] := 0
+  dira[TEST_LED_YELLOW] := 1
+  outa[TEST_LED_YELLOW] := 0  
+  dira[TEST_BUTTON_RED] := 0
+  dira[TEST_BUTTON_YELLOW] := 0 
+
+pri getTestButton(p)
+  return !ina[p]
+
+pri setTestLED(p,val)
+  outa[p] := val
+  
 PUB init | i
   ' This is for all the nodes to synchronize using the single
   ' command parameter block.
@@ -119,6 +141,8 @@ PUB init | i
   ' Start the serial ports
   SER_LEFT.StartRxTx ( LEFT_RX,  LEFT_TX, 0, BAUDRATE)
   SER_RIGHT.StartRxTx(RIGHT_RX, RIGHT_TX, 0, BAUDRATE)
+
+  initTest
 
 PUB getParamAddr
   return @param_command
@@ -156,15 +180,16 @@ PRI process_message(source_port, msg) | chip,queue,i,nq,p,q
     ' We have no way of knowing which node sourced the message, so if
     ' you are local and you are broadcasting to this chip then you'll
     ' get a copy too.
-
-    nq := nq - "A" ' ASCII name (A,B,C,D,...) to index (0,1,2,3,...)
+        
+    nq := queue - "A" ' ASCII name (A,B,C,D,...) to index (0,1,2,3,...)
         
     repeat i from 0 to (NUM_QUEUES-1)
       ' If this msg was directed to the queue directly or broadcast
       if queue=="*" or i==nq
         ' If the message buffer is not free, we drop this message.
         if msg_buffers[i*QUEUE_SIZE] == 0
-          ' Copy msg to the queue
+          ' Copy msg to the queue                    
+          
           p := msg
           q := @msg_buffers+i*QUEUE_SIZE
           repeat while byte[p]<>0
@@ -239,18 +264,14 @@ PRI check_command | p
   ' COM_SEND_MESSAGE  = 3
 
   if param_command == COM_IDLE
-    return
+    return                   
 
-  if param_command == COM_GET_MESSAGE
-    p := @msg_buffers + param_argument*QUEUE_SIZE
-    if byte[p] == 0
+  if param_command == COM_GET_MESSAGE    
+    p := @msg_buffers + (param_argument-"A")*QUEUE_SIZE
+    if byte[p] == 0      
       param_return := 0
-    else
+    else      
       param_return := p    
-    
-  elseif param_command == COM_CLEAR_MESSAGE
-    byte[param_argument] := 0
-    param_return := 0        
     
   elseif param_command == COM_SEND_MESSAGE
     process_message(3, param_argument)

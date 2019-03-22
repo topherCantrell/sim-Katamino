@@ -78,25 +78,42 @@ var
     
 PUB run | p
 
-  bus.init
-  
+  bus.init                                    
+   
   p := bus.getParamAddr
   cognew(controlLED(p,"A",TEST_LED_GREEN), @stack1) 
   cognew(controlLED(p,"B",TEST_LED_RED), @stack2)
   
-  cognew(handleButton(p,"C",TEST_BUTTON_RED), @stack3)
-  cognew(handleButton(p,"D",TEST_BUTTON_YELLOW), @stack4)
+  'cognew(handleButton(p,"C",TEST_BUTTON_RED), @stack3)
+  'cognew(handleButton(p,"D",TEST_BUTTON_YELLOW), @stack4)
 
   bus.run
 
-pri controlLED(params,queue,pin) : lock_id
+pri controlLED(params,queue,pin) | lock_id, p
 
-  initTest
-  
-  ' {"to":"cq","on":True}
-  ' {"to":"cq","on":False}
+   initTest
+     
+  ' {"to":"cq","on":true}
+  ' {"to":"cq","on":false}
   
   lock_id := long[params+12]
+
+  repeat while long[params]<>0    
+        
+  repeat
+    repeat until not lockset(lock_id)
+    long[params+4] := queue
+    long[params] := bus#COM_GET_MESSAGE
+    repeat while long[params]<>0
+    p := long[params+8]
+    if p <> 0
+      if byte[p+17] == "t"
+        setTestLED(pin,1)
+      else
+        setTestLED(pin,0)
+      byte[p] := 0
+    lockclr(lock_id)  
+  
   ' TODO Magic here
 
   ' acquire the lock
