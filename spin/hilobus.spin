@@ -35,7 +35,6 @@
 
  API
    get_message(q):ptr - returns a pointer to the current JSON or 0 if there is no message
-   clear_message(ptr) - releases the message pointer
    send_message(msg)  - puts the message on the bus
 
    - acquire the lock with "repeat until not lockset(param_lock_id)"
@@ -185,8 +184,7 @@ PRI process_message(source_port, msg) | chip,queue,i,nq,p,q
       if queue=="*" or i==nq
         ' If the message buffer is not free, we drop this message.
         if msg_buffers[i*QUEUE_SIZE] == 0
-          ' Copy msg to the queue                    
-          
+          ' Copy msg to the queue
           p := msg
           q := @msg_buffers+i*QUEUE_SIZE
           repeat while byte[p]<>0
