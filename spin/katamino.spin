@@ -52,6 +52,8 @@ CON ' DEBUG
     TEST_BUTTON_RED    = 5
     TEST_BUTTON_YELLOW = 6
 
+    DQUOTE = $22
+
 OBJ
   bus : "hilobus"
   API : "hilobus_api"
@@ -64,6 +66,12 @@ pri getNumber(p) | a,b
 pri setNumber(p,value)
   byte[p] := value / 10
   byte[p+1] := value // 10
+
+pri getCell(p,x,y,width,height) 
+  return byte[p+width*y+x]
+
+pri setCell(p,x,y,width,height,value)
+  byte[p+width*y+x] := value
 
 pri main_loop | p, q, width, height, i, j 
 
@@ -82,32 +90,76 @@ pri main_loop | p, q, width, height, i, j
 
   ' i is the starting point of the pieces
 
-pri one_run(p,q, width, height) | i, token, x, y, m    
+pri draw_board(p,q,width,height) | i, token, x, y, m, c
+{{
+   p = pointer to first piece
+   q = pointer to board
+   width, height = board dimensions
+   returns:
+     0 if drawn OK or
+     token if there is an overlap
+}}
 
-  ' ##### Draw the board
-
-  repeat while byte[p]<>"?" ' TODO quote character  
-    ' Location of the piece
+  ' Try all pieces
+  repeat while byte[p]<>DQUOTE
+  
+    ' Location of the piece and the draw string number
     token := byte[p]
     x := getNumber(p+1)
     y := getNumber(p+3)
     m := getNumber(p+5)
-    p := p + 7     
-     
+    p := p + 7    
+    
     ' Find the draw string for this piece
     repeat while m<>0
       repeat while byte[i]<>","
         p := p + 1
       m := m - 1
       p := p + 1
-     
-    ' TODO draw the piece. If overlap, reset pointers and break out.
-     
+
+    ' The first cell is the starting x,y
+    c := getCell(q,x,y,width,height)
+    if c<>"." and c<>token
+      ' Not us ... don't even try the others
+      return token
+    
+    ' Try all the chars in the draw string         
+    repeat while byte[p]<>"," and byte[p]<>DQUOTE
+      c := byte[p]
+      p := p + 1
+      if c=="1"                                           
+        y := y - 1
+      elseif c=="2"
+        x := x + 1
+      elseif c=="3"
+        y := y + 1
+      else
+        x := x - 1
+      c := getCell(q,x,y,width,height)
+      if c<>"." and c<>token
+        return token
+      setCell(q,x,y,width,height,token)    
+
     ' Next piece
-    repeat while byte[p]<>":" and byte[p]<>"?" ' TODO quote character
+    repeat while byte[p]<>":" and byte[p]<>DQUOTE
       p := p + 1
     if byte[p]==":"
+      ' Skip the colon or leave the DQUOTE
       p := p + 1
+
+  ' 0 means all drawn OK ... no overlap
+  return 0      
+
+pri one_run(p,q, width, height) | i, token, x, y, m, overlap, c
+{{
+  p = pointer to first piece
+  q = pointer to board
+  width, height = dimensions of the board
+}}   
+
+  ' ##### Draw the board
+
+  c := draw_board(p,q,width,height)  
 
   ' ##### Advance the pointer set
 
