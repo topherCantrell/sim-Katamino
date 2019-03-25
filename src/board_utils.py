@@ -31,6 +31,13 @@ BOARDS_FOR_PIECES = [
     [[1, 60], [3, 20], [2, 30], [4, 15], [5, 12], [6, 10]],  # 12
 ]
 
+# 1x60 : No
+# 3x20 : Yes
+# 2x30 : No
+# 4x15 : Yes
+# 5x12 : Yes
+# 6x10 : ?
+
 
 def new_board(width, height=5):
     '''Create a new board'''

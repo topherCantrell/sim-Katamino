@@ -4,10 +4,9 @@ Messages are pure text. Numbers in the text are two digit decimal.
 
 Configure message:
 
-  "*" = "wwhh..........nnAxxyymm0011,1122,3333:Bxxyymm1111" 
+{"to":"??","C":"wwhh..........Axxyymm0011,1122,3333:Bxxyymm1111"} 
 
   First the initial board. wwhh (width,height) followed by w*h characters.
-  Then nn is the current piece.
   Then the piece-info list with entries separated by ":"
     The first character is the token.
     xx,yy are the current X,Y coordinates
@@ -16,14 +15,16 @@ Configure message:
 
 Status request:
 
-  "?" = True
+{"to":"??","R":True}
 
 Response message to status request:
+
+{"to":"00","T":"..seeBelow.."}
 
   "status" = 
     "!" if there is no solution to send (still working)
     "*" if the process is complete (also the initial state before config)                    
-    "wwhh..........nnAxxyymm0011,1122,3333:Bxxyymm1111" return the current state if a solution is found
+    "wwhh..........Axxyymm0011,1122,3333:Bxxyymm1111" return the current state if a solution is found
 
 Algorithm
 
@@ -54,6 +55,68 @@ CON ' DEBUG
 OBJ
   bus : "hilobus"
   API : "hilobus_api"
+
+pri getNumber(p) | a,b
+  a := byte[p] - "0"
+  b := byte[p+1] - "0"
+  return a*10+b
+
+pri setNumber(p,value)
+  byte[p] := value / 10
+  byte[p+1] := value // 10
+
+pri main_loop | p, q, width, height, i, j 
+
+  ' ##### Parse out the board (width, hight, state)
+
+  ' TODO p is the config start
+
+  width := getNumber(p)
+  height := getNumber(p+2)
+
+  ' TODO q is the 60-byte scratch buffer
+
+  ' Copy the initial starting board
+  repeat i from 0 to (width*height-1)
+    byte[q+i] := byte[p+i]
+
+  ' i is the starting point of the pieces
+
+pri one_run(p,q, width, height) | i, token, x, y, m    
+
+  ' ##### Draw the board
+
+  repeat while byte[p]<>"?" ' TODO quote character  
+    ' Location of the piece
+    token := byte[p]
+    x := getNumber(p+1)
+    y := getNumber(p+3)
+    m := getNumber(p+5)
+    p := p + 7     
+     
+    ' Find the draw string for this piece
+    repeat while m<>0
+      repeat while byte[i]<>","
+        p := p + 1
+      m := m - 1
+      p := p + 1
+     
+    ' TODO draw the piece. If overlap, reset pointers and break out.
+     
+    ' Next piece
+    repeat while byte[p]<>":" and byte[p]<>"?" ' TODO quote character
+      p := p + 1
+    if byte[p]==":"
+      p := p + 1
+
+  ' ##### Advance the pointer set
+
+  ' TODO return 2 if success
+  ' TODO return 3 if no more to try
+
+  ' Keep calling me
+  return 0 
+
 
 pri initTest
   dira[TEST_LED_GREEN] := 1
